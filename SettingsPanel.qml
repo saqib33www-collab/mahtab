@@ -20,7 +20,7 @@ Item {
   property bool closingFromHost: false
 
   readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.mahtab"
-  readonly property bool popupBlocked: positionField.popupOpen || screenModeField.popupOpen
+  readonly property bool popupBlocked: screenModeField.popupOpen
     || layoutField.popupOpen || dateField.popupOpen
 
   readonly property color scrim: Color.menu.scrim
@@ -32,18 +32,6 @@ Item {
   readonly property int contentGap: Style.space(16)
 
   property var draft: Clock.readSettings({})
-
-  readonly property var positionOptions: [
-    { value: "top-left", label: "Top left" },
-    { value: "top-center", label: "Top center" },
-    { value: "top-right", label: "Top right" },
-    { value: "middle-left", label: "Middle left" },
-    { value: "middle-center", label: "Middle center" },
-    { value: "middle-right", label: "Middle right" },
-    { value: "bottom-left", label: "Bottom left" },
-    { value: "bottom-center", label: "Bottom center" },
-    { value: "bottom-right", label: "Bottom right" }
-  ]
 
   readonly property var screenModeOptions: [
     { value: "all", label: "All monitors" },
@@ -280,33 +268,10 @@ Item {
                 onChanged: function(v) { root.patchDraft({ layout: v }) }
               }
 
-              Dropdown {
-                id: positionField
-                width: parent.width
-                label: "Position"
-                value: root.draft.position
-                options: root.positionOptions
-                onChanged: function(v) { root.patchDraft({ position: v, positionMode: "anchor" }) }
-              }
-
-              Button {
-                width: parent.width
-                text: "Move above windows"
-                bordered: true
-                focusable: true
-                onClicked: {
-                  if (root.service && typeof root.service.beginDragEdit === "function")
-                    root.service.beginDragEdit()
-                  root.requestClose()
-                }
-              }
-
               Text {
                 width: parent.width
                 wrapMode: Text.WordWrap
-                text: root.draft.positionMode === "free"
-                  ? "Drag the clock directly on the wallpaper to move it. Pick a Position preset above to snap back to an anchor."
-                  : "Drag the clock directly on the wallpaper to move it — use Move above windows only when a window covers it."
+                text: "Drag the clock on the wallpaper to move it, and scroll over it to resize."
                 color: Qt.darker(Color.foreground, 1.35)
                 font.family: Style.font.family
                 font.pixelSize: Style.font.caption
@@ -319,30 +284,6 @@ Item {
                 value: root.draft.screenMode
                 options: root.screenModeOptions
                 onChanged: function(v) { root.patchDraft({ screenMode: v }) }
-              }
-
-              SettingsSlider {
-                bar: root.fakeBar
-                label: "Scale"
-                minimum: 0.4
-                maximum: 4
-                step: 0.05
-                value: root.draft.scale
-                valueText: root.draft.scale.toFixed(2)
-                onMoved: function(v) { root.setDraft({ scale: v }) }
-                onReleased: function(v) { root.patchDraft({ scale: v }) }
-              }
-
-              SettingsSlider {
-                bar: root.fakeBar
-                label: "Edge margin"
-                minimum: 0
-                maximum: 200
-                step: 1
-                value: root.draft.margin
-                valueText: Math.round(root.draft.margin) + "px"
-                onMoved: function(v) { root.setDraft({ margin: v }) }
-                onReleased: function(v) { root.patchDraft({ margin: v }) }
               }
 
               PanelSeparator { width: parent.width }

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "saqib33w.mahtab",
   "name": "Mahtab",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "author": "saqib33w",
   "description": "A wallpaper clock with a stylized faux-kana weekday and a family of ported Ryoku time faces, highly inspired by the Kronos Omarchy plugin.",
   "kinds": ["service", "panel", "bar-widget"],
@@ -26,13 +26,6 @@
       "label": "Show clock",
       "defaultValue": true,
       "description": "Master visibility toggle for the wallpaper clock."
-    },
-    {
-      "key": "scale",
-      "type": "number",
-      "label": "Scale",
-      "defaultValue": 1,
-      "description": "Size of the clock card from 0.4 to 4."
     },
     {
       "key": "use24h",
@@ -68,41 +61,6 @@
       "label": "Date style",
       "defaultValue": "inline",
       "description": "Date strip design: inline (one caption), badge (accent chip), or stacked (torn-calendar)."
-    },
-    {
-      "key": "position",
-      "type": "string",
-      "label": "Position",
-      "defaultValue": "middle-center",
-      "description": "Anchor on the wallpaper: top-left, top-center, top-right, middle-left, middle-center, middle-right, bottom-left, bottom-center, bottom-right."
-    },
-    {
-      "key": "positionMode",
-      "type": "string",
-      "label": "Placement mode",
-      "defaultValue": "anchor",
-      "description": "anchor uses the Position preset; free uses a dragged position."
-    },
-    {
-      "key": "posX",
-      "type": "number",
-      "label": "Free X",
-      "defaultValue": 0.5,
-      "description": "Horizontal center of the clock as a fraction of the screen when placement mode is free (may extend past 0-1 when the clock overflows an edge)."
-    },
-    {
-      "key": "posY",
-      "type": "number",
-      "label": "Free Y",
-      "defaultValue": 0.5,
-      "description": "Vertical center of the clock as a fraction of the screen when placement mode is free (may extend past 0-1 when the clock overflows an edge)."
-    },
-    {
-      "key": "margin",
-      "type": "number",
-      "label": "Edge margin",
-      "defaultValue": 24,
-      "description": "Distance from the screen edge in pixels."
     },
     {
       "key": "barPadding",

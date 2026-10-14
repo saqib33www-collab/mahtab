@@ -81,13 +81,12 @@ omarchy bar move saqib33w.mahtab --section right
 ## Configure
 
 Everything is editable from the right-click settings panel and is stored in
-`~/.config/omarchy/shell.json`. You can also set values from the command line:
+`~/.config/omarchy/shell.json`. Position is set by dragging the clock and size by
+scrolling over it. A few extra values can also be set from the command line:
 
 ```sh
-omarchy bar set saqib33w.mahtab scale 1.4
 omarchy bar set saqib33w.mahtab layout grand
 omarchy bar set saqib33w.mahtab use24h true
-omarchy bar set saqib33w.mahtab position middle-right
 omarchy bar set saqib33w.mahtab screenMode primary
 ```
 
