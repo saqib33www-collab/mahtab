@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Commons
 import "ClockModel.js" as Clock
 
 // "Grand" layout: one big editorial time set in a display serif, with the colon
@@ -12,14 +13,14 @@ Item {
   property real faceScale: 1
   property bool use24h: false
   property bool showSeconds: true
-  property color ink: "#e9eaec"
-  property color accent: "#8ab4f8"
+  property color ink: Color.foreground
+  property color accent: Color.accent
   property string fontFamily: "Noto Serif, serif"
-  property string labelFontFamily: "sans-serif"
+  property string labelFontFamily: Style.font.family
   property bool cardEnabled: false
-  property color cardColor: "#101315"
+  property color cardColor: Color.background
   property real cardAlpha: 0.9
-  property int cornerRadius: 16
+  property int cornerRadius: Style.cornerRadius
   property date now: new Date()
 
   readonly property var t: Clock.clockParts(now, use24h)

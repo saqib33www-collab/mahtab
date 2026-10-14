@@ -22,7 +22,7 @@ Item {
   property bool cardEnabled: false
   property color cardColor: Color.background
   property real cardAlpha: 0.9
-  property int cornerRadius: 16
+  property int cornerRadius: Style.cornerRadius
   property date now: new Date()
 
   readonly property var t: Clock.clockParts(now, use24h)

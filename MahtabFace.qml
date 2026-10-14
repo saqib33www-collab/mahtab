@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Commons
 import "ClockModel.js" as Clock
 import "Kana.js" as Kana
 
@@ -13,12 +14,12 @@ Item {
 
   property real faceScale: 1
   property bool use24h: false
-  property color ink: "#e9eaec"
-  property string fontFamily: "sans-serif"
+  property color ink: Color.foreground
+  property string fontFamily: Style.font.family
   property bool cardEnabled: false
-  property color cardColor: "#101315"
+  property color cardColor: Color.background
   property real cardAlpha: 0.9
-  property int cornerRadius: 16
+  property int cornerRadius: Style.cornerRadius
   property date now: new Date()
 
   readonly property var t: Clock.clockParts(now, use24h)

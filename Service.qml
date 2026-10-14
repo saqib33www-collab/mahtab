@@ -227,18 +227,18 @@ Item {
         }
 
         // Push the live settings onto whichever face/date component the loaders
-        // built. Guards keep it safe for the faces that expose fewer knobs.
+        // built. Colors that follow the theme (accent, card, font, corner) are
+        // left to the faces' own bindings to the shell singletons so a theme
+        // change recolors the clock live; only pinned overrides are pushed here.
         function applyFaceConfig(item) {
           if (!item) return
           item.faceScale = root.cfg.scale
           item.use24h = root.cfg.use24h
           item.ink = root.cfg.inkColor !== "" ? root.cfg.inkColor : "#ffffff"
           item.cardEnabled = root.cfg.cardEnabled
-          item.cardColor = root.cfg.cardColor !== "" ? root.cfg.cardColor : Color.background
           item.cardAlpha = root.cfg.cardAlpha
-          item.cornerRadius = Style.cornerRadius
           if ("showSeconds" in item) item.showSeconds = root.cfg.showSeconds
-          if ("accent" in item) item.accent = Color.accent
+          if ("cardColor" in item && root.cfg.cardColor !== "") item.cardColor = root.cfg.cardColor
           if ("fontFamily" in item && root.cfg.fontFamily !== "") item.fontFamily = root.cfg.fontFamily
         }
 
