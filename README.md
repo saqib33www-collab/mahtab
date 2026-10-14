@@ -24,7 +24,7 @@ windows, so it only shows on an empty desktop.
 ## Install
 
 ```sh
-omarchy plugin add https://github.com/saqib33w/omarchy-goodnight-clock.git --enable
+omarchy plugin add https://github.com/saqib33www-collab/omarchy-goodnight-clock.git --enable
 ```
 
 Then place the toggle in a bar section (the widget defaults to the right section):
