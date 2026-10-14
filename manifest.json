@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "id": "saqib33w.goodnight",
+  "name": "Good-night Clock",
+  "version": "1.0.0",
+  "author": "saqib33w",
+  "description": "A minimal 'Good [time of day]' clock card with a faux-kana weekday, rendered on the wallpaper layer.",
+  "kinds": ["service", "panel", "bar-widget"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml",
+    "panel": "SettingsPanel.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Good-night Clock",
+    "description": "Toggle the wallpaper 'Good-night' clock on or off; right-click for settings.",
+    "category": "Time",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  },
+  "schema": [
+    {
+      "key": "clockEnabled",
+      "type": "boolean",
+      "label": "Show clock",
+      "defaultValue": true,
+      "description": "Master visibility toggle for the wallpaper clock."
+    },
+    {
+      "key": "scale",
+      "type": "number",
+      "label": "Scale",
+      "defaultValue": 1,
+      "description": "Size of the clock card from 0.4 to 4."
+    },
+    {
+      "key": "use24h",
+      "type": "boolean",
+      "label": "24-hour clock",
+      "defaultValue": false
+    },
+    {
+      "key": "position",
+      "type": "string",
+      "label": "Position",
+      "defaultValue": "middle-center",
+      "description": "Anchor on the wallpaper: top-left, top-center, top-right, middle-left, middle-center, middle-right, bottom-left, bottom-center, bottom-right."
+    },
+    {
+      "key": "positionMode",
+      "type": "string",
+      "label": "Placement mode",
+      "defaultValue": "anchor",
+      "description": "anchor uses the Position preset; free uses a dragged position."
+    },
+    {
+      "key": "posX",
+      "type": "number",
+      "label": "Free X",
+      "defaultValue": 0.5,
+      "description": "Horizontal center of the clock as a fraction of the screen when placement mode is free (may extend past 0-1 when the clock overflows an edge)."
+    },
+    {
+      "key": "posY",
+      "type": "number",
+      "label": "Free Y",
+      "defaultValue": 0.5,
+      "description": "Vertical center of the clock as a fraction of the screen when placement mode is free (may extend past 0-1 when the clock overflows an edge)."
+    },
+    {
+      "key": "margin",
+      "type": "number",
+      "label": "Edge margin",
+      "defaultValue": 24,
+      "description": "Distance from the screen edge in pixels."
+    },
+    {
+      "key": "barPadding",
+      "type": "number",
+      "label": "Bar padding",
+      "defaultValue": 0,
+      "description": "Extra inset from the Omarchy bar. 0 auto-detects when the bar shares the same edge."
+    },
+    {
+      "key": "cardEnabled",
+      "type": "boolean",
+      "label": "Show card",
+      "defaultValue": true,
+      "description": "Draw a rounded card behind the clock for readability on busy wallpapers."
+    },
+    {
+      "key": "cardColor",
+      "type": "string",
+      "label": "Card color",
+      "defaultValue": "",
+      "description": "Hex color (#RRGGBB) for the card. Empty uses the theme background."
+    },
+    {
+      "key": "cardAlpha",
+      "type": "number",
+      "label": "Card opacity",
+      "defaultValue": 0.9,
+      "description": "Card background opacity from 0 (invisible) to 1 (opaque)."
+    },
+    {
+      "key": "inkColor",
+      "type": "string",
+      "label": "Ink color",
+      "defaultValue": "",
+      "description": "Hex color (#RRGGBB) for text, rules, and the kana weekday. Empty uses the theme foreground."
+    },
+    {
+      "key": "fontFamily",
+      "type": "string",
+      "label": "Font",
+      "defaultValue": "",
+      "description": "Family for the greeting and date. Empty uses the Omarchy shell font."
+    },
+    {
+      "key": "screenMode",
+      "type": "string",
+      "label": "Show on",
+      "defaultValue": "all",
+      "description": "Which monitors display the clock: all, primary, focused, or external."
+    }
+  ]
+}
