@@ -2,22 +2,14 @@
   "schemaVersion": 1,
   "id": "saqib33w.mahtab",
   "name": "Mahtab",
-  "version": "1.2.6",
+  "version": "1.3.0",
   "author": "saqib33w",
-  "description": "A wallpaper clock with a stylized faux-kana weekday and a family of ported Ryoku time faces, highly inspired by the Kronos Omarchy plugin.",
-  "kinds": ["service", "panel", "bar-widget"],
+  "description": "A wallpaper clock with a stylized faux-kana weekday and a family of ported Ryoku time faces, highly inspired by the Kronos Omarchy plugin. No bar icon: right-click the clock to open its settings.",
+  "kinds": ["service", "panel"],
   "keepLoaded": true,
   "entryPoints": {
     "service": "Service.qml",
-    "panel": "SettingsPanel.qml",
-    "barWidget": "BarWidget.qml"
-  },
-  "barWidget": {
-    "displayName": "Mahtab",
-    "description": "Toggle the wallpaper Mahtab clock on or off; right-click for settings.",
-    "category": "Time",
-    "allowMultiple": false,
-    "defaultSection": "right"
+    "panel": "SettingsPanel.qml"
   },
   "schema": [
     {
