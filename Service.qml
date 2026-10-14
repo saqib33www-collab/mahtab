@@ -214,11 +214,12 @@ Item {
       visible: clockVisible
       anchors { top: true; bottom: true; left: true; right: true }
       color: "transparent"
-      // While editing, only the clock's own bounds receive pointer events so the
-      // rest of the desktop keeps working underneath. Outside edit mode the mask
-      // still clips input to the clock so a right-click on it can open settings —
-      // windows sit above this layer, so it only takes clicks on empty wallpaper.
-      mask: panel.clockVisible ? clockMask : null
+      // While editing, or while the clock is being grabbed directly, take over
+      // the whole surface so the drag never loses the pointer. Otherwise clip
+      // input to the clock so a right-click on it can open settings — windows
+      // sit above this layer, so it only takes clicks on empty wallpaper.
+      mask: root.pointerDragActive ? null
+        : (panel.clockVisible ? clockMask : null)
 
       ScreenMoveRemap {
         id: remapGuard
@@ -226,7 +227,11 @@ Item {
       }
 
       WlrLayershell.namespace: "saqib33w-mahtab"
-      WlrLayershell.layer: panel.editingHere ? WlrLayer.Overlay : WlrLayer.Bottom
+      // Promote above windows while dragging (either from the settings panel or
+      // by grabbing the clock directly) so it slides smoothly instead of being
+      // occluded by whatever is underneath the pointer.
+      WlrLayershell.layer: (panel.editingHere || root.pointerDragActive)
+        ? WlrLayer.Overlay : WlrLayer.Bottom
       WlrLayershell.keyboardFocus: panel.editingHere
         ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
       exclusionMode: ExclusionMode.Ignore
