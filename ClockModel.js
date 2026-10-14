@@ -27,6 +27,7 @@ function clockParts(date, use24h) {
   return {
     hh: hh,
     mm: pad2(date.getMinutes()),
+    ss: pad2(date.getSeconds()),
     ampm: h >= 12 ? "PM" : "AM",
     hours: h
   }
@@ -76,6 +77,7 @@ function readSettings(entry) {
     clockEnabled: asBool(entry.clockEnabled, true),
     scale: clampNum(entry.scale !== undefined ? entry.scale : 1, 1, 0.4, 4),
     use24h: asBool(entry.use24h, false),
+    layout: normalizeLayout(entry.layout),
     position: String(entry.position || "middle-center"),
     margin: clampNum(entry.margin !== undefined ? entry.margin : 24, 24, 0, 400),
     barPadding: Math.max(0, Math.round(Number(entry.barPadding) || 0)),
@@ -98,6 +100,7 @@ function settingsToEntry(pluginId, settings) {
     clockEnabled: settings.clockEnabled,
     scale: settings.scale,
     use24h: settings.use24h,
+    layout: settings.layout,
     position: settings.position,
     margin: settings.margin,
     barPadding: settings.barPadding,
@@ -120,6 +123,15 @@ function mergeSettings(pluginId, base, updates) {
   for (var key in base) merged[key] = base[key]
   for (var ukey in updates) merged[ukey] = updates[ukey]
   return readSettings(settingsToEntry(pluginId, merged))
+}
+
+// -------------------------------------------------------------------- layout
+
+var LAYOUTS = ["mahtab", "grand"]
+
+function normalizeLayout(value) {
+  var layout = String(value || "mahtab").toLowerCase()
+  return LAYOUTS.indexOf(layout) >= 0 ? layout : "mahtab"
 }
 
 // ----------------------------------------------------------------- placement

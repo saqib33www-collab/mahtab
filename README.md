@@ -15,17 +15,27 @@ windows, so it only shows on an empty desktop.
 
 ## Features
 
-- Greeting that changes with the time of day (_Morning_, _Afternoon_, _Evening_, _Night_)
-- Stylized faux-kana weekday glyphs drawn as strokes
+- Two layout styles: **Mahtab** (greeting card) and **Grand** (one large editorial time)
+- Greeting that changes with the time of day (_Morning_, _Afternoon_, _Evening_, _Night_) in the Mahtab layout
+- Stylized faux-kana weekday glyphs drawn as strokes in the Mahtab layout
 - Date and time, with an optional 24-hour clock
 - Optional rounded card behind the clock for readability on busy wallpapers
 - Nine anchor positions **or** free-form placement by dragging the clock anywhere
 - Multi-monitor targeting: all, primary, focused, or external only
 - Live settings through a right-click panel — no shell reload required
 
+## Layout styles
+
+- **Mahtab** — the greeting card with a faux-kana weekday (default).
+- **Grand** — a single, oversized editorial time with the colon and seconds in the
+  accent colour. Ported from the Ryoku shell's `ClockGrand` face.
+
+Pick a style under **Layout → Layout style** in the settings panel.
+
 ## Credits
 
 - Inspired by **Kronos** by [MASH2RAFI](https://github.com/MASH2RAFI).
+- The **Grand** layout is ported from the Ryoku shell's desktop clock.
 - Built for [Omarchy](https://omarchy.org) (Quattro) and its Quickshell-based shell.
 
 ## Requirements
@@ -59,6 +69,7 @@ Everything is editable from the right-click settings panel and is stored in
 
 ```sh
 omarchy bar set saqib33w.mahtab scale 1.4
+omarchy bar set saqib33w.mahtab layout grand
 omarchy bar set saqib33w.mahtab use24h true
 omarchy bar set saqib33w.mahtab position middle-right
 omarchy bar set saqib33w.mahtab screenMode primary

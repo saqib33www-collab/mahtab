@@ -21,6 +21,7 @@ Item {
 
   readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.mahtab"
   readonly property bool popupBlocked: positionField.popupOpen || screenModeField.popupOpen
+    || layoutField.popupOpen
 
   readonly property color scrim: Color.menu.scrim
   readonly property color cardBackground: Color.popups.background
@@ -49,6 +50,11 @@ Item {
     { value: "primary", label: "Primary only" },
     { value: "focused", label: "Focused only" },
     { value: "external", label: "External only" }
+  ]
+
+  readonly property var layoutOptions: [
+    { value: "mahtab", label: "Mahtab (greeting)" },
+    { value: "grand", label: "Grand (big time)" }
   ]
 
   readonly property var fakeBar: QtObject {
@@ -239,6 +245,15 @@ Item {
               PanelSectionHeader {
                 width: parent.width
                 text: "Layout"
+              }
+
+              Dropdown {
+                id: layoutField
+                width: parent.width
+                label: "Layout style"
+                value: root.draft.layout
+                options: root.layoutOptions
+                onChanged: function(v) { root.patchDraft({ layout: v }) }
               }
 
               Dropdown {

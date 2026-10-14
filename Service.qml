@@ -205,8 +205,8 @@ Item {
       Item {
         id: clockHost
         visible: panel.clockVisible
-        width: face.implicitWidth
-        height: face.implicitHeight
+        width: face.item ? face.item.implicitWidth : 0
+        height: face.item ? face.item.implicitHeight : 0
 
         function relayout() {
           root.schedulePlaceClock(clockHost, panel)
@@ -285,21 +285,45 @@ Item {
         }
 
         Connections {
-          target: face
+          target: face.item
           function onImplicitWidthChanged() { clockHost.relayout() }
           function onImplicitHeightChanged() { clockHost.relayout() }
         }
 
-        MahtabFace {
+        Loader {
           id: face
-          ink: root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
-          fontFamily: root.cfg.fontFamily !== "" ? root.cfg.fontFamily : Style.font.family
-          faceScale: root.cfg.scale
-          use24h: root.cfg.use24h
-          cardEnabled: root.cfg.cardEnabled
-          cardColor: root.cfg.cardColor !== "" ? root.cfg.cardColor : Color.background
-          cardAlpha: root.cfg.cardAlpha
-          cornerRadius: Style.cornerRadius
+          sourceComponent: root.cfg.layout === "grand" ? grandFace : mahtabFace
+          onItemChanged: clockHost.relayout()
+
+          Component {
+            id: mahtabFace
+            MahtabFace {
+              ink: root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
+              fontFamily: root.cfg.fontFamily !== "" ? root.cfg.fontFamily : Style.font.family
+              faceScale: root.cfg.scale
+              use24h: root.cfg.use24h
+              cardEnabled: root.cfg.cardEnabled
+              cardColor: root.cfg.cardColor !== "" ? root.cfg.cardColor : Color.background
+              cardAlpha: root.cfg.cardAlpha
+              cornerRadius: Style.cornerRadius
+            }
+          }
+
+          Component {
+            id: grandFace
+            GrandFace {
+              ink: root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
+              accent: Color.accent
+              fontFamily: root.cfg.fontFamily !== "" ? root.cfg.fontFamily : "Noto Serif, serif"
+              labelFontFamily: Style.font.family
+              faceScale: root.cfg.scale
+              use24h: root.cfg.use24h
+              cardEnabled: root.cfg.cardEnabled
+              cardColor: root.cfg.cardColor !== "" ? root.cfg.cardColor : Color.background
+              cardAlpha: root.cfg.cardAlpha
+              cornerRadius: Style.cornerRadius
+            }
+          }
         }
       }
     }

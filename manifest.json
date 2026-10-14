@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "saqib33w.mahtab",
   "name": "Mahtab",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "saqib33w",
   "description": "A minimal wallpaper clock with a stylized faux-kana weekday, highly inspired by the Kronos Omarchy plugin.",
   "kinds": ["service", "panel", "bar-widget"],
@@ -38,7 +38,15 @@
       "key": "use24h",
       "type": "boolean",
       "label": "24-hour clock",
-      "defaultValue": false
+      "defaultValue": false,
+      "description": "Show the hour in 24-hour format instead of 12-hour."
+    },
+    {
+      "key": "layout",
+      "type": "string",
+      "label": "Layout style",
+      "defaultValue": "mahtab",
+      "description": "Presentation style — mahtab (greeting card with a faux-kana weekday) or grand (one large editorial serif time)."
     },
     {
       "key": "position",
