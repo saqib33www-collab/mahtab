@@ -232,7 +232,7 @@ Item {
           if (!item) return
           item.faceScale = root.cfg.scale
           item.use24h = root.cfg.use24h
-          item.ink = root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
+          item.ink = root.cfg.inkColor !== "" ? root.cfg.inkColor : "#ffffff"
           item.cardEnabled = root.cfg.cardEnabled
           item.cardColor = root.cfg.cardColor !== "" ? root.cfg.cardColor : Color.background
           item.cardAlpha = root.cfg.cardAlpha
