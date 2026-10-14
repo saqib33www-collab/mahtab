@@ -32,6 +32,17 @@ windows, so it only shows on an empty desktop.
 
 Pick a style under **Layout → Layout style** in the settings panel.
 
+## Screenshots
+
+|  |  |
+|---|---|
+| ![Screenshot 1](screenshots/01.png) | ![Screenshot 2](screenshots/02.png) |
+| ![Screenshot 3](screenshots/03.png) | ![Screenshot 4](screenshots/04.png) |
+| ![Screenshot 5](screenshots/05.png) | ![Screenshot 6](screenshots/06.png) |
+| ![Screenshot 7](screenshots/07.png) | ![Screenshot 8](screenshots/08.png) |
+| ![Screenshot 9](screenshots/09.png) | ![Screenshot 10](screenshots/10.png) |
+| ![Screenshot 11](screenshots/11.png) | |
+
 ## Credits
 
 - Inspired by **Kronos** by [MASH2RAFI](https://github.com/MASH2RAFI).
