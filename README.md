@@ -46,8 +46,7 @@ Pick a style under **Layout → Layout style** in the settings panel.
 
 ## Credits
 
-- Inspired by **Kronos** by [MASH2RAFI](https://github.com/MASH2RAFI).
-- The **Grand** layout is ported from the Ryoku shell's desktop clock.
+- **Highly inspired by [Kronos](https://github.com/MASH2RAFI)** and the clock faces are **copied from the Ryoku shell**.
 - Built for [Omarchy](https://omarchy.org) (Quattro) and its Quickshell-based shell.
 
 ## Requirements
