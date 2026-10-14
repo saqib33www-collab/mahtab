@@ -9,8 +9,7 @@
 
 A minimal _"Good morning / afternoon / evening / night"_ clock with a stylized
 faux-kana weekday, rendered on the Omarchy **wallpaper layer** — behind your
-windows, so it only shows on an empty desktop. It runs with **no bar icon**:
-right-click the clock to open its settings.
+windows, so it only shows on an empty desktop.
 
 ![Mahtab preview](preview.png)
 
@@ -23,7 +22,7 @@ right-click the clock to open its settings.
 - Optional rounded card behind the clock for readability on busy wallpapers
 - Nine anchor positions **or** free-form placement by dragging the clock anywhere
 - Multi-monitor targeting: all, primary, focused, or external only
-- No bar icon — right-click the clock itself to open the settings panel, live, with no shell reload
+- Live settings through a right-click panel — no shell reload required
 
 ## Layout styles
 
@@ -61,27 +60,32 @@ Pick a style under **Layout → Layout style** in the settings panel.
 omarchy plugin add https://github.com/saqib33www-collab/mahtab.git --enable
 ```
 
-There is no bar icon. The plugin is enabled as a wallpaper clock and shows up
-on the desktop immediately.
+Then place the toggle in a bar section (the widget defaults to the right section):
+
+```sh
+omarchy bar move saqib33w.mahtab --section right
+```
 
 ## Usage
 
-- **Right-click the clock** on the wallpaper to open the settings panel.
+- **Left-click** the bar icon to show or hide the wallpaper clock.
+- **Right-click** the bar icon, or right-click the clock itself on the wallpaper,
+  to open the settings panel.
 - **Drag the clock directly on the wallpaper** to move it. If a window covers it,
   open settings and choose **Move above windows** to drag it above everything.
-- To hide or show the clock, open settings and toggle **Show clock**.
-
-If the clock is hidden and you need to reopen settings, run:
-
-```sh
-omarchy-shell shell summon saqib33w.mahtab '{}'
-```
 
 ## Configure
 
-Everything is edited from the right-click settings panel. Changes apply live and
-are stored in `~/.config/omarchy/shell.json`, under the plugin's entry in the
-top-level `plugins` array.
+Everything is editable from the right-click settings panel and is stored in
+`~/.config/omarchy/shell.json`. You can also set values from the command line:
+
+```sh
+omarchy bar set saqib33w.mahtab scale 1.4
+omarchy bar set saqib33w.mahtab layout grand
+omarchy bar set saqib33w.mahtab use24h true
+omarchy bar set saqib33w.mahtab position middle-right
+omarchy bar set saqib33w.mahtab screenMode primary
+```
 
 ## Remove
 
@@ -95,4 +99,10 @@ MIT — see [LICENSE](LICENSE).
 
 ### Layouts
 
-Available faces (ported from Ryoku desktop clock): `mahtab`, `grand`, `digital`, `minimal`, `analog`, `flip`, `rings`, `bighour`, `metal`, `column`, `outline`, `banner`. Pick one under **Layout → Layout style** in the settings panel.
+Available faces (ported from Ryoku desktop clock): `mahtab`, `grand`, `digital`, `minimal`, `analog`, `flip`, `rings`, `bighour`, `metal`, `column`, `outline`, `banner`.
+
+Set via:
+
+```bash
+omarchy bar set saqib33w.mahtab layout digital use24h true showSeconds false dateShow true dateLayout badge
+```
