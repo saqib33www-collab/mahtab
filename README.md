@@ -1,10 +1,17 @@
-# Good-night Clock
+# Mahtab
+
+> **Mahtab** (مہتاب, "moonlight") is a clock widget **highly inspired by the
+> [Kronos](https://github.com/MASH2RAFI) Omarchy plugin — full credit to
+> [MASH2RAFI](https://github.com/MASH2RAFI).**
+>
+> **This is a vibe-coded project.** I am not a programmer; it was built
+> conversationally with an AI assistant. Use it as-is and expect rough edges.
 
 A minimal _"Good morning / afternoon / evening / night"_ clock with a stylized
 faux-kana weekday, rendered on the Omarchy **wallpaper layer** — behind your
 windows, so it only shows on an empty desktop.
 
-![Good-night Clock preview](preview.png)
+![Mahtab preview](preview.png)
 
 ## Features
 
@@ -15,6 +22,11 @@ windows, so it only shows on an empty desktop.
 - Nine anchor positions **or** free-form placement by dragging the clock anywhere
 - Multi-monitor targeting: all, primary, focused, or external only
 - Live settings through a right-click panel — no shell reload required
+
+## Credits
+
+- Inspired by **Kronos** by [MASH2RAFI](https://github.com/MASH2RAFI).
+- Built for [Omarchy](https://omarchy.org) (Quattro) and its Quickshell-based shell.
 
 ## Requirements
 
@@ -30,7 +42,7 @@ omarchy plugin add https://github.com/saqib33www-collab/omarchy-goodnight-clock.
 Then place the toggle in a bar section (the widget defaults to the right section):
 
 ```sh
-omarchy bar move saqib33w.goodnight --section right
+omarchy bar move saqib33w.mahtab --section right
 ```
 
 ## Usage
@@ -46,16 +58,16 @@ Everything is editable from the right-click settings panel and is stored in
 `~/.config/omarchy/shell.json`. You can also set values from the command line:
 
 ```sh
-omarchy bar set saqib33w.goodnight scale 1.4
-omarchy bar set saqib33w.goodnight use24h true
-omarchy bar set saqib33w.goodnight position middle-right
-omarchy bar set saqib33w.goodnight screenMode primary
+omarchy bar set saqib33w.mahtab scale 1.4
+omarchy bar set saqib33w.mahtab use24h true
+omarchy bar set saqib33w.mahtab position middle-right
+omarchy bar set saqib33w.mahtab screenMode primary
 ```
 
 ## Remove
 
 ```sh
-omarchy plugin remove saqib33w.goodnight
+omarchy plugin remove saqib33w.mahtab
 ```
 
 ## License

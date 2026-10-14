@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "saqib33w.goodnight",
-  "name": "Good-night Clock",
+  "id": "saqib33w.mahtab",
+  "name": "Mahtab",
   "version": "1.0.0",
   "author": "saqib33w",
-  "description": "A minimal 'Good [time of day]' clock card with a faux-kana weekday, rendered on the wallpaper layer.",
+  "description": "A minimal wallpaper clock with a stylized faux-kana weekday, highly inspired by the Kronos Omarchy plugin.",
   "kinds": ["service", "panel", "bar-widget"],
   "keepLoaded": true,
   "entryPoints": {
@@ -13,8 +13,8 @@
     "barWidget": "BarWidget.qml"
   },
   "barWidget": {
-    "displayName": "Good-night Clock",
-    "description": "Toggle the wallpaper 'Good-night' clock on or off; right-click for settings.",
+    "displayName": "Mahtab",
+    "description": "Toggle the wallpaper Mahtab clock on or off; right-click for settings.",
     "category": "Time",
     "allowMultiple": false,
     "defaultSection": "right"

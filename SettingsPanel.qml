@@ -6,8 +6,8 @@ import qs.Commons
 import qs.Ui
 import "ClockModel.js" as Clock
 
-// Settings panel for the "Good-night" wallpaper clock. Summoned by the bar
-// widget's right-click (or `omarchy-shell shell toggle saqib33w.goodnight`).
+// Settings panel for the "Mahtab" wallpaper clock. Summoned by the bar
+// widget's right-click (or `omarchy-shell shell toggle saqib33w.mahtab`).
 // Every change is written straight back to this plugin's shell.json entry, so
 // the wallpaper clock updates live through ShellConfigWatcher.
 Item {
@@ -19,7 +19,7 @@ Item {
   property bool opened: false
   property bool closingFromHost: false
 
-  readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.goodnight"
+  readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.mahtab"
   readonly property bool popupBlocked: positionField.popupOpen || screenModeField.popupOpen
 
   readonly property color scrim: Color.menu.scrim
@@ -120,7 +120,7 @@ Item {
     visible: root.opened
     anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
-    WlrLayershell.namespace: "saqib33w-goodnight-settings"
+    WlrLayershell.namespace: "saqib33w-mahtab-settings"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: root.opened ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
     exclusionMode: ExclusionMode.Ignore
@@ -178,7 +178,7 @@ Item {
           Text {
             id: titleBlock
             width: parent.width
-            text: "Good-night Clock"
+            text: "Mahtab"
             color: Color.foreground
             font.family: Style.font.family
             font.pixelSize: Style.font.title

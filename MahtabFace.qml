@@ -2,8 +2,9 @@ import QtQuick
 import "ClockModel.js" as Clock
 import "Kana.js" as Kana
 
-// A minimal greeting card, ported from the Ryoku "Good-night" screensaver
-// face: a vertical rule, a two-line "GOOD <time of day>" greeting, the weekday
+// Mahtab face. Highly inspired by the Kronos Omarchy plugin (MASH2RAFI):
+// a minimal greeting card with a vertical rule, a two-line
+// "GOOD <time of day>" greeting, the weekday
 // drawn in an angular faux-kana stroke alphabet, the date and time, closed by
 // a second rule. Composed in a fixed 431x765 box scaled by `faceScale`, so a
 // scale of 1 is pixel-identical to the reference design.

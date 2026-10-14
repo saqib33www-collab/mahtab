@@ -3,12 +3,12 @@ import qs.Commons
 import qs.Ui
 import "ClockModel.js" as Clock
 
-// Bar toggle for the wallpaper "Good-night" clock. Left click shows/hides the
+// Bar toggle for the wallpaper "Mahtab" clock. Left click shows/hides the
 // clock; right-click opens the settings panel. The show/hide choice is written
 // back to this widget's shell.json entry so it survives restarts.
 BarWidget {
   id: root
-  moduleName: "saqib33w.goodnight"
+  moduleName: "saqib33w.mahtab"
 
   readonly property var shell: root.bar ? root.bar.shell : null
 
@@ -41,8 +41,8 @@ BarWidget {
     active: root.clockEnabled
     useActiveColor: true
     tooltipText: root.clockEnabled
-      ? "Good-night clock: on — click to hide, right-click for settings"
-      : "Good-night clock: off — click to show, right-click for settings"
+      ? "Mahtab clock: on — click to hide, right-click for settings"
+      : "Mahtab clock: off — click to show, right-click for settings"
     onPressed: function(button) {
       if (button === Qt.RightButton) root.openSettings()
       else root.toggleClock()

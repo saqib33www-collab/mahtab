@@ -8,8 +8,9 @@ import qs.Ui
 import "ClockModel.js" as Clock
 import "PluginConfig.js" as Config
 
-// Renders the "Good-night" clock on the wallpaper layer (below windows), one
-// card per monitor. Config lives in shell.json; ShellConfigWatcher keeps it
+// Renders the "Mahtab" clock on the wallpaper layer (below windows), one
+// card per monitor. Highly inspired by the Kronos Omarchy plugin (MASH2RAFI).
+// Config lives in shell.json; ShellConfigWatcher keeps it
 // live so edits from `omarchy bar set` apply without a shell restart.
 Item {
   id: root
@@ -17,7 +18,7 @@ Item {
   property var shell: null
   property var manifest: null
 
-  readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.goodnight"
+  readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.mahtab"
   readonly property var cfg: Clock.readSettings(liveConfig.entry || { id: root.pluginId })
   readonly property var pos: Clock.parsePosition(root.cfg.position)
 
@@ -179,7 +180,7 @@ Item {
         window: panel
       }
 
-      WlrLayershell.namespace: "saqib33w-goodnight"
+      WlrLayershell.namespace: "saqib33w-mahtab"
       WlrLayershell.layer: panel.editingHere ? WlrLayer.Overlay : WlrLayer.Bottom
       WlrLayershell.keyboardFocus: panel.editingHere
         ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
@@ -289,7 +290,7 @@ Item {
           function onImplicitHeightChanged() { clockHost.relayout() }
         }
 
-        GoodNightFace {
+        MahtabFace {
           id: face
           ink: root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
           fontFamily: root.cfg.fontFamily !== "" ? root.cfg.fontFamily : Style.font.family
