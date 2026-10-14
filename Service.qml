@@ -37,6 +37,13 @@ Item {
     root.editActive = true
   }
 
+  // Open the settings panel. Right-clicking the clock on the wallpaper summons
+  // it through the same shell IPC the bar widget uses.
+  function openSettings() {
+    if (root.shell && typeof root.shell.summon === "function")
+      root.shell.summon(root.pluginId, "{}")
+  }
+
   function endDragEdit() {
     root.editActive = false
   }
@@ -173,8 +180,10 @@ Item {
       anchors { top: true; bottom: true; left: true; right: true }
       color: "transparent"
       // While editing, only the clock's own bounds receive pointer events so the
-      // rest of the desktop keeps working underneath.
-      mask: panel.editingHere ? editorMask : null
+      // rest of the desktop keeps working underneath. Outside edit mode the mask
+      // still clips input to the clock so a right-click on it can open settings —
+      // windows sit above this layer, so it only takes clicks on empty wallpaper.
+      mask: panel.clockVisible ? clockMask : null
 
       ScreenMoveRemap {
         id: remapGuard
@@ -188,7 +197,7 @@ Item {
       exclusionMode: ExclusionMode.Ignore
 
       Region {
-        id: editorMask
+        id: clockMask
         item: clockHost
       }
 
@@ -393,6 +402,17 @@ Item {
             clockHost.applyFaceConfig(item)
             clockHost.relayout()
           }
+        }
+
+        // Right-click the clock on the wallpaper to open its settings. Only the
+        // right button is accepted, and only outside drag-edit mode (the
+        // DragHandler owns input then); the window mask confines it to the clock.
+        MouseArea {
+          anchors.fill: parent
+          acceptedButtons: Qt.RightButton
+          enabled: !panel.editingHere
+          cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+          onClicked: root.openSettings()
         }
 
         Component { id: mahtabComp; MahtabFace {} }

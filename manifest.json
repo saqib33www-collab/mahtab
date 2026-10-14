@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "saqib33w.mahtab",
   "name": "Mahtab",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "author": "saqib33w",
   "description": "A wallpaper clock with a stylized faux-kana weekday and a family of ported Ryoku time faces, highly inspired by the Kronos Omarchy plugin.",
   "kinds": ["service", "panel", "bar-widget"],

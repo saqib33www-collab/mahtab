@@ -69,7 +69,8 @@ omarchy bar move saqib33w.mahtab --section right
 ## Usage
 
 - **Left-click** the bar icon to show or hide the wallpaper clock.
-- **Right-click** the bar icon to open the settings panel.
+- **Right-click** the bar icon, or right-click the clock itself on the wallpaper,
+  to open the settings panel.
 - In settings, choose **Drag to reposition**, then drag the clock anywhere on the
   screen and press **Escape** to finish.
 
