@@ -256,6 +256,14 @@ Item {
                 onClicked: root.patchDraft({ cardEnabled: !root.draft.cardEnabled })
               }
 
+              Toggle {
+                width: parent.width
+                label: "Text shadow"
+                description: "Draw a soft halo behind the time and date so they stay legible on busy wallpapers."
+                checked: root.draft.shadow
+                onClicked: root.patchDraft({ shadow: !root.draft.shadow })
+              }
+
               PanelSeparator { width: parent.width }
 
               PanelSectionHeader {

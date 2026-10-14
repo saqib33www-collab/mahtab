@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
@@ -214,6 +215,14 @@ Item {
         readonly property real gap: (clockHost.hasDate && clockHost.dh > 0)
           ? Math.round(14 * root.cfg.scale) : 0
 
+        // Soft halo behind the time so it reads on busy wallpapers. Dark behind
+        // light ink, light behind dark ink.
+        readonly property color inkColor: root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
+        readonly property bool shadowOn: root.cfg.shadow
+        readonly property color shadowTint: (0.299 * clockHost.inkColor.r
+          + 0.587 * clockHost.inkColor.g + 0.114 * clockHost.inkColor.b) > 0.5
+          ? Qt.rgba(0, 0, 0, 0.6) : Qt.rgba(1, 1, 1, 0.65)
+
         width: Math.max(1, Math.max(clockHost.fw, clockHost.dw))
         height: Math.max(1, clockHost.fh + clockHost.gap + clockHost.dh)
 
@@ -355,6 +364,14 @@ Item {
           x: (clockHost.width - clockHost.fw) / 2
           y: 0
           sourceComponent: clockHost.faceFor(root.cfg.layout)
+          layer.enabled: clockHost.shadowOn
+          layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: clockHost.shadowTint
+            shadowBlur: 0.85
+            shadowVerticalOffset: 2
+            shadowHorizontalOffset: 0
+          }
           onItemChanged: {
             clockHost.applyFaceConfig(item)
             clockHost.relayout()
@@ -368,6 +385,14 @@ Item {
           active: root.cfg.dateShow
           visible: root.cfg.dateShow
           sourceComponent: root.cfg.dateShow ? clockHost.dateFor(root.cfg.dateLayout) : null
+          layer.enabled: clockHost.shadowOn
+          layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: clockHost.shadowTint
+            shadowBlur: 0.85
+            shadowVerticalOffset: 2
+            shadowHorizontalOffset: 0
+          }
           onItemChanged: {
             clockHost.applyFaceConfig(item)
             clockHost.relayout()

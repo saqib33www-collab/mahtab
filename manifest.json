@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "saqib33w.mahtab",
   "name": "Mahtab",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": "saqib33w",
   "description": "A wallpaper clock with a stylized faux-kana weekday and a family of ported Ryoku time faces, highly inspired by the Kronos Omarchy plugin.",
   "kinds": ["service", "panel", "bar-widget"],
@@ -117,6 +117,13 @@
       "label": "Show card",
       "defaultValue": false,
       "description": "Draw a rounded card behind the clock for readability on busy wallpapers."
+    },
+    {
+      "key": "shadow",
+      "type": "boolean",
+      "label": "Text shadow",
+      "defaultValue": true,
+      "description": "Draw a soft halo behind the time and date so they stay legible on busy wallpapers."
     },
     {
       "key": "cardColor",
