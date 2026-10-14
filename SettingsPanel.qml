@@ -291,7 +291,7 @@ Item {
 
               Button {
                 width: parent.width
-                text: "Drag to reposition"
+                text: "Move above windows"
                 bordered: true
                 focusable: true
                 onClicked: {
@@ -303,9 +303,10 @@ Item {
 
               Text {
                 width: parent.width
-                visible: root.draft.positionMode === "free"
                 wrapMode: Text.WordWrap
-                text: "Using a dragged position. Pick a Position preset above to snap back to an anchor."
+                text: root.draft.positionMode === "free"
+                  ? "Drag the clock directly on the wallpaper to move it. Pick a Position preset above to snap back to an anchor."
+                  : "Drag the clock directly on the wallpaper to move it — use Move above windows only when a window covers it."
                 color: Qt.darker(Color.foreground, 1.35)
                 font.family: Style.font.family
                 font.pixelSize: Style.font.caption

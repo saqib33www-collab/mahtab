@@ -33,6 +33,10 @@ Item {
   // its own bounds, so it can be grabbed and moved anywhere on the screen.
   property bool editActive: false
 
+  // True while the clock is being dragged directly on the wallpaper (outside
+  // edit mode). Blocks relayout from snapping it back mid-drag.
+  property bool pointerDragActive: false
+
   function beginDragEdit() {
     root.editActive = true
   }
@@ -84,7 +88,7 @@ Item {
 
   function placeClock(host, panel) {
     if (!host || !panel || panel.width <= 0 || panel.height <= 0) return
-    if (root.editActive) return
+    if (root.editActive || root.pointerDragActive) return
 
     // Free placement wins: a dragged position is stored as a screen fraction so
     // it survives resolution changes and monitor swaps.
@@ -280,17 +284,19 @@ Item {
 
         DragHandler {
           id: dragHandler
-          enabled: panel.editingHere
+          enabled: clockHost.visible
           target: null
           property real startX: 0
           property real startY: 0
           cursorShape: active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
           onActiveChanged: {
             if (active) {
+              root.pointerDragActive = true
               dragHandler.startX = clockHost.x
               dragHandler.startY = clockHost.y
             } else {
               root.commitClockDrag(clockHost, panel)
+              root.pointerDragActive = false
             }
           }
           onActiveTranslationChanged: {
@@ -411,7 +417,7 @@ Item {
           anchors.fill: parent
           acceptedButtons: Qt.RightButton
           enabled: !panel.editingHere
-          cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+          cursorShape: dragHandler.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
           onClicked: root.openSettings()
         }
 
