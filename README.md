@@ -21,6 +21,7 @@ windows, so it only shows on an empty desktop.
 - Date and time, with an optional 24-hour clock
 - Optional rounded card behind the clock for readability on busy wallpapers
 - Nine anchor positions **or** free-form placement by dragging the clock anywhere
+- Resize by scrolling over the clock — no settings panel needed
 - Multi-monitor targeting: all, primary, focused, or external only
 - Live settings through a right-click panel — no shell reload required
 
@@ -73,6 +74,7 @@ omarchy bar move saqib33w.mahtab --section right
   to open the settings panel.
 - **Drag the clock directly on the wallpaper** to move it. If a window covers it,
   open settings and choose **Move above windows** to drag it above everything.
+- **Scroll over the clock** to resize it. The new size is saved automatically.
 
 ## Configure
 

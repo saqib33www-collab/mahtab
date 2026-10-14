@@ -28,6 +28,20 @@ Item {
     pluginId: root.pluginId
   }
 
+  // Writing the new scale to disk happens a moment after the last scroll tick,
+  // so a fast flick doesn't hammer shell.json.
+  Timer {
+    id: scalePersist
+    interval: 300
+    repeat: false
+    onTriggered: {
+      if (root.pendingScale <= 0) return
+      if (!(root.shell && typeof root.shell.updateEntryInline === "function")) return
+      var merged = Clock.mergeSettings(root.pluginId, root.cfg, { scale: root.pendingScale })
+      root.shell.updateEntryInline(root.pluginId, Clock.settingsToEntry(root.pluginId, merged))
+    }
+  }
+
   // Transient drag-to-reposition mode. Entered from the settings panel; while
   // active the clock is promoted above windows with a pointer mask limited to
   // its own bounds, so it can be grabbed and moved anywhere on the screen.
@@ -36,6 +50,23 @@ Item {
   // True while the clock is being dragged directly on the wallpaper (outside
   // edit mode). Blocks relayout from snapping it back mid-drag.
   property bool pointerDragActive: false
+
+  // Scale set by scrolling over the clock. While > 0 it overrides cfg.scale for
+  // instant feedback and is cleared once the persisted value round-trips back
+  // through the config watcher.
+  property real pendingScale: 0
+  readonly property real liveScale: root.pendingScale > 0 ? root.pendingScale : root.cfg.scale
+
+  // Scroll over the clock to resize. Steps in 0.05 to match the settings slider
+  // and clamps to the same 0.4..4 range; the clockHost Connections react to
+  // pendingScale for instant feedback and the value persists shortly after.
+  function nudgeScale(dir) {
+    var base = root.liveScale
+    var next = Math.max(0.4, Math.min(4, Math.round((base + dir * 0.05) * 100) / 100))
+    if (Math.abs(next - base) < 0.001) return
+    root.pendingScale = next
+    scalePersist.restart()
+  }
 
   function beginDragEdit() {
     root.editActive = true
@@ -226,7 +257,7 @@ Item {
         readonly property real dw: clockHost.hasDate ? dateFace.item.implicitWidth : 0
         readonly property real dh: clockHost.hasDate ? dateFace.item.implicitHeight : 0
         readonly property real gap: (clockHost.hasDate && clockHost.dh > 0)
-          ? Math.round(14 * root.cfg.scale) : 0
+          ? Math.round(14 * root.liveScale) : 0
 
         // Soft halo behind the time so it reads on busy wallpapers. Always black.
         readonly property bool shadowOn: root.cfg.shadow
@@ -245,7 +276,7 @@ Item {
         // change recolors the clock live; only pinned overrides are pushed here.
         function applyFaceConfig(item) {
           if (!item) return
-          item.faceScale = root.cfg.scale
+          item.faceScale = root.liveScale
           item.use24h = root.cfg.use24h
           item.ink = root.cfg.inkColor !== "" ? root.cfg.inkColor : "#ffffff"
           item.cardEnabled = root.cfg.cardEnabled
@@ -324,7 +355,7 @@ Item {
         Text {
           anchors.horizontalCenter: parent.horizontalCenter
           y: -height - 10
-          text: "Drag to move · Esc to finish"
+          text: "Drag to move · Scroll to resize · Esc to finish"
           visible: panel.editingHere
           color: Color.accent
           font.family: Style.font.family
@@ -348,6 +379,13 @@ Item {
         Connections {
           target: root
           function onCfgChanged() {
+            if (root.pendingScale > 0 && Math.abs(root.cfg.scale - root.pendingScale) < 0.001)
+              root.pendingScale = 0
+            clockHost.applyFaceConfig(face.item)
+            clockHost.applyFaceConfig(dateFace.item)
+            clockHost.relayout()
+          }
+          function onPendingScaleChanged() {
             clockHost.applyFaceConfig(face.item)
             clockHost.applyFaceConfig(dateFace.item)
             clockHost.relayout()
@@ -410,15 +448,23 @@ Item {
           }
         }
 
-        // Right-click the clock on the wallpaper to open its settings. Only the
-        // right button is accepted, and only outside drag-edit mode (the
-        // DragHandler owns input then); the window mask confines it to the clock.
+        // Right-click the clock on the wallpaper to open its settings, and scroll
+        // over it to resize. Only the right button is accepted; the wheel is
+        // handled regardless of button. Disabled in drag-edit mode (the
+        // DragHandler owns input then), and the window mask confines input to
+        // the clock.
         MouseArea {
           anchors.fill: parent
           acceptedButtons: Qt.RightButton
           enabled: !panel.editingHere
           cursorShape: dragHandler.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
           onClicked: root.openSettings()
+          onWheel: function(wheel) {
+            var d = wheel.angleDelta.y !== 0 ? wheel.angleDelta.y : wheel.pixelDelta.y
+            if (d === 0) return
+            root.nudgeScale(d > 0 ? 1 : -1)
+            wheel.accepted = true
+          }
         }
 
         Component { id: mahtabComp; MahtabFace {} }
