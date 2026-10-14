@@ -79,7 +79,7 @@ function readSettings(entry) {
     position: String(entry.position || "middle-center"),
     margin: clampNum(entry.margin !== undefined ? entry.margin : 24, 24, 0, 400),
     barPadding: Math.max(0, Math.round(Number(entry.barPadding) || 0)),
-    cardEnabled: asBool(entry.cardEnabled, true),
+    cardEnabled: asBool(entry.cardEnabled, false),
     cardColor: String(entry.cardColor || ""),
     cardAlpha: clampNum(entry.cardAlpha !== undefined ? entry.cardAlpha : 0.9, 0.9, 0, 1),
     inkColor: String(entry.inkColor || ""),

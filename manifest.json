@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "saqib33w.mahtab",
   "name": "Mahtab",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "saqib33w",
   "description": "A minimal wallpaper clock with a stylized faux-kana weekday, highly inspired by the Kronos Omarchy plugin.",
   "kinds": ["service", "panel", "bar-widget"],
@@ -86,7 +86,7 @@
       "key": "cardEnabled",
       "type": "boolean",
       "label": "Show card",
-      "defaultValue": true,
+      "defaultValue": false,
       "description": "Draw a rounded card behind the clock for readability on busy wallpapers."
     },
     {

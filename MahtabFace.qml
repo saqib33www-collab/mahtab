@@ -15,7 +15,7 @@ Item {
   property bool use24h: false
   property color ink: "#e9eaec"
   property string fontFamily: "sans-serif"
-  property bool cardEnabled: true
+  property bool cardEnabled: false
   property color cardColor: "#101315"
   property real cardAlpha: 0.9
   property int cornerRadius: 16
