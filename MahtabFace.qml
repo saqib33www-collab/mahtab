@@ -13,6 +13,9 @@ Item {
   id: face
 
   property real faceScale: 1
+  Behavior on faceScale {
+    NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+  }
   property bool use24h: false
   property color ink: Color.foreground
   property string fontFamily: Style.font.family

@@ -75,7 +75,8 @@ omarchy bar move saqib33w.mahtab --section right
 - **Drag the clock directly on the wallpaper** to move it. It lifts above your
   windows while you drag, then settles back onto the wallpaper, so it slides
   smoothly even over open windows.
-- **Scroll over the clock** to resize it. The new size is saved automatically.
+- **Scroll over the clock** to resize it — it eases smoothly to the new size and
+  saves automatically.
 
 ## Configure
 
