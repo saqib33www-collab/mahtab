@@ -205,11 +205,61 @@ Item {
       Item {
         id: clockHost
         visible: panel.clockVisible
-        width: face.item ? face.item.implicitWidth : 0
-        height: face.item ? face.item.implicitHeight : 0
+
+        readonly property real fw: face.item ? face.item.implicitWidth : 0
+        readonly property real fh: face.item ? face.item.implicitHeight : 0
+        readonly property bool hasDate: root.cfg.dateShow && dateFace.item !== null
+        readonly property real dw: clockHost.hasDate ? dateFace.item.implicitWidth : 0
+        readonly property real dh: clockHost.hasDate ? dateFace.item.implicitHeight : 0
+        readonly property real gap: (clockHost.hasDate && clockHost.dh > 0)
+          ? Math.round(14 * root.cfg.scale) : 0
+
+        width: Math.max(1, Math.max(clockHost.fw, clockHost.dw))
+        height: Math.max(1, clockHost.fh + clockHost.gap + clockHost.dh)
 
         function relayout() {
           root.schedulePlaceClock(clockHost, panel)
+        }
+
+        // Push the live settings onto whichever face/date component the loaders
+        // built. Guards keep it safe for the faces that expose fewer knobs.
+        function applyFaceConfig(item) {
+          if (!item) return
+          item.faceScale = root.cfg.scale
+          item.use24h = root.cfg.use24h
+          item.ink = root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
+          item.cardEnabled = root.cfg.cardEnabled
+          item.cardColor = root.cfg.cardColor !== "" ? root.cfg.cardColor : Color.background
+          item.cardAlpha = root.cfg.cardAlpha
+          item.cornerRadius = Style.cornerRadius
+          if ("showSeconds" in item) item.showSeconds = root.cfg.showSeconds
+          if ("accent" in item) item.accent = Color.accent
+          if ("fontFamily" in item && root.cfg.fontFamily !== "") item.fontFamily = root.cfg.fontFamily
+        }
+
+        function faceFor(layout) {
+          switch (layout) {
+          case "grand": return grandComp
+          case "digital": return digitalComp
+          case "minimal": return minimalComp
+          case "analog": return analogComp
+          case "flip": return flipComp
+          case "rings": return ringsComp
+          case "bighour": return bigHourComp
+          case "metal": return metalComp
+          case "column": return columnComp
+          case "outline": return outlineComp
+          case "banner": return bannerComp
+          default: return mahtabComp
+          }
+        }
+
+        function dateFor(layout) {
+          switch (layout) {
+          case "badge": return dateBadgeComp
+          case "stacked": return dateStackedComp
+          default: return dateInlineComp
+          }
         }
 
         Component.onCompleted: clockHost.relayout()
@@ -277,7 +327,11 @@ Item {
 
         Connections {
           target: root
-          function onCfgChanged() { clockHost.relayout() }
+          function onCfgChanged() {
+            clockHost.applyFaceConfig(face.item)
+            clockHost.applyFaceConfig(dateFace.item)
+            clockHost.relayout()
+          }
           function onClockInsetsChanged() { clockHost.relayout() }
           function onFocusedMonitorNameChanged() { clockHost.relayout() }
           function onInternalMonitorNameChanged() { clockHost.relayout() }
@@ -290,41 +344,51 @@ Item {
           function onImplicitHeightChanged() { clockHost.relayout() }
         }
 
+        Connections {
+          target: dateFace.item
+          function onImplicitWidthChanged() { clockHost.relayout() }
+          function onImplicitHeightChanged() { clockHost.relayout() }
+        }
+
         Loader {
           id: face
-          sourceComponent: root.cfg.layout === "grand" ? grandFace : mahtabFace
-          onItemChanged: clockHost.relayout()
-
-          Component {
-            id: mahtabFace
-            MahtabFace {
-              ink: root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
-              fontFamily: root.cfg.fontFamily !== "" ? root.cfg.fontFamily : Style.font.family
-              faceScale: root.cfg.scale
-              use24h: root.cfg.use24h
-              cardEnabled: root.cfg.cardEnabled
-              cardColor: root.cfg.cardColor !== "" ? root.cfg.cardColor : Color.background
-              cardAlpha: root.cfg.cardAlpha
-              cornerRadius: Style.cornerRadius
-            }
-          }
-
-          Component {
-            id: grandFace
-            GrandFace {
-              ink: root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
-              accent: Color.accent
-              fontFamily: root.cfg.fontFamily !== "" ? root.cfg.fontFamily : "Noto Serif, serif"
-              labelFontFamily: Style.font.family
-              faceScale: root.cfg.scale
-              use24h: root.cfg.use24h
-              cardEnabled: root.cfg.cardEnabled
-              cardColor: root.cfg.cardColor !== "" ? root.cfg.cardColor : Color.background
-              cardAlpha: root.cfg.cardAlpha
-              cornerRadius: Style.cornerRadius
-            }
+          x: (clockHost.width - clockHost.fw) / 2
+          y: 0
+          sourceComponent: clockHost.faceFor(root.cfg.layout)
+          onItemChanged: {
+            clockHost.applyFaceConfig(item)
+            clockHost.relayout()
           }
         }
+
+        Loader {
+          id: dateFace
+          x: (clockHost.width - clockHost.dw) / 2
+          y: clockHost.fh + clockHost.gap
+          active: root.cfg.dateShow
+          visible: root.cfg.dateShow
+          sourceComponent: root.cfg.dateShow ? clockHost.dateFor(root.cfg.dateLayout) : null
+          onItemChanged: {
+            clockHost.applyFaceConfig(item)
+            clockHost.relayout()
+          }
+        }
+
+        Component { id: mahtabComp; MahtabFace {} }
+        Component { id: grandComp; GrandFace {} }
+        Component { id: digitalComp; DigitalFace {} }
+        Component { id: minimalComp; MinimalFace {} }
+        Component { id: analogComp; AnalogFace {} }
+        Component { id: flipComp; FlipFace {} }
+        Component { id: ringsComp; RingsFace {} }
+        Component { id: bigHourComp; BigHourFace {} }
+        Component { id: metalComp; MetalFace {} }
+        Component { id: columnComp; ColumnFace {} }
+        Component { id: outlineComp; OutlineFace {} }
+        Component { id: bannerComp; BannerFace {} }
+        Component { id: dateInlineComp; DateInlineFace {} }
+        Component { id: dateBadgeComp; DateBadgeFace {} }
+        Component { id: dateStackedComp; DateStackedFace {} }
       }
     }
   }

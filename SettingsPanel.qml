@@ -21,7 +21,7 @@ Item {
 
   readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.mahtab"
   readonly property bool popupBlocked: positionField.popupOpen || screenModeField.popupOpen
-    || layoutField.popupOpen
+    || layoutField.popupOpen || dateField.popupOpen
 
   readonly property color scrim: Color.menu.scrim
   readonly property color cardBackground: Color.popups.background
@@ -54,7 +54,23 @@ Item {
 
   readonly property var layoutOptions: [
     { value: "mahtab", label: "Mahtab (greeting)" },
-    { value: "grand", label: "Grand (big time)" }
+    { value: "grand", label: "Grand (big serif)" },
+    { value: "digital", label: "Digital (mono)" },
+    { value: "minimal", label: "Minimal" },
+    { value: "analog", label: "Analog" },
+    { value: "flip", label: "Flip (split-flap)" },
+    { value: "rings", label: "Rings" },
+    { value: "bighour", label: "Big hour" },
+    { value: "metal", label: "Metal" },
+    { value: "column", label: "Column" },
+    { value: "outline", label: "Outline" },
+    { value: "banner", label: "Banner" }
+  ]
+
+  readonly property var dateLayoutOptions: [
+    { value: "inline", label: "Inline" },
+    { value: "badge", label: "Badge" },
+    { value: "stacked", label: "Stacked (calendar)" }
   ]
 
   readonly property var fakeBar: QtObject {
@@ -333,6 +349,32 @@ Item {
                 description: "Show the hour in 24-hour format instead of 12-hour."
                 checked: root.draft.use24h
                 onClicked: root.patchDraft({ use24h: !root.draft.use24h })
+              }
+
+              Toggle {
+                width: parent.width
+                label: "Show seconds"
+                description: "Show the seconds where the layout has room for them."
+                checked: root.draft.showSeconds
+                onClicked: root.patchDraft({ showSeconds: !root.draft.showSeconds })
+              }
+
+              Toggle {
+                width: parent.width
+                label: "Show date"
+                description: "Stack a date strip centred under the time."
+                checked: root.draft.dateShow
+                onClicked: root.patchDraft({ dateShow: !root.draft.dateShow })
+              }
+
+              Dropdown {
+                id: dateField
+                width: parent.width
+                visible: root.draft.dateShow
+                label: "Date style"
+                value: root.draft.dateLayout
+                options: root.dateLayoutOptions
+                onChanged: function(v) { root.patchDraft({ dateLayout: v }) }
               }
 
               PanelSeparator { width: parent.width }

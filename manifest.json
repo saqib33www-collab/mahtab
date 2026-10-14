@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "id": "saqib33w.mahtab",
   "name": "Mahtab",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "saqib33w",
-  "description": "A minimal wallpaper clock with a stylized faux-kana weekday, highly inspired by the Kronos Omarchy plugin.",
+  "description": "A wallpaper clock with a stylized faux-kana weekday and a family of ported Ryoku time faces, highly inspired by the Kronos Omarchy plugin.",
   "kinds": ["service", "panel", "bar-widget"],
   "keepLoaded": true,
   "entryPoints": {
@@ -42,11 +42,32 @@
       "description": "Show the hour in 24-hour format instead of 12-hour."
     },
     {
+      "key": "showSeconds",
+      "type": "boolean",
+      "label": "Show seconds",
+      "defaultValue": true,
+      "description": "Show the seconds where the layout has room for them."
+    },
+    {
       "key": "layout",
       "type": "string",
       "label": "Layout style",
       "defaultValue": "mahtab",
-      "description": "Presentation style — mahtab (greeting card with a faux-kana weekday) or grand (one large editorial serif time)."
+      "description": "Presentation style: mahtab (greeting card with a faux-kana weekday), grand (editorial serif), digital, minimal, analog, flip, rings, bighour, metal, column, outline, or banner."
+    },
+    {
+      "key": "dateShow",
+      "type": "boolean",
+      "label": "Show date",
+      "defaultValue": false,
+      "description": "Stack a date strip centred under the time."
+    },
+    {
+      "key": "dateLayout",
+      "type": "string",
+      "label": "Date style",
+      "defaultValue": "inline",
+      "description": "Date strip design: inline (one caption), badge (accent chip), or stacked (torn-calendar)."
     },
     {
       "key": "position",

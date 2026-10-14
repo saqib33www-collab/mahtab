@@ -4,9 +4,15 @@
 // Kept independent of Qt singletons so it can run as a plain library.
 
 var WEEKDAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+var WEEKDAYS_TITLE = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+var WEEKDAYS_SHORT_TITLE = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 var MONTHS = [
   "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
   "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+]
+var MONTHS_TITLE = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
 ]
 
 function pad2(value) {
@@ -16,27 +22,39 @@ function pad2(value) {
 
 function clockParts(date, use24h) {
   var h = date.getHours()
-  var hh
-  if (use24h) {
-    hh = pad2(h)
-  } else {
-    var h12 = h % 12
-    if (h12 === 0) h12 = 12
-    hh = pad2(h12)
-  }
+  var m = date.getMinutes()
+  var sec = date.getSeconds()
+  var h12 = h % 12
+  if (h12 === 0) h12 = 12
+  var hh = use24h ? pad2(h) : pad2(h12)
   return {
     hh: hh,
-    mm: pad2(date.getMinutes()),
-    ss: pad2(date.getSeconds()),
+    mm: pad2(m),
+    ss: pad2(sec),
     ampm: h >= 12 ? "PM" : "AM",
-    hours: h
+    hours: h,
+    minutes: m,
+    seconds: sec,
+    h12: h12,
+    // smooth degrees, 12 o'clock = 0, clockwise.
+    hourAngle: ((h % 12) + m / 60) * 30,
+    minuteAngle: (m + sec / 60) * 6,
+    secondAngle: sec * 6
   }
 }
 
 function dateParts(date) {
+  var dow = date.getDay()
+  var mon = date.getMonth()
   return {
-    weekdayShort: WEEKDAYS[date.getDay()],
-    month: MONTHS[date.getMonth()],
+    weekdayShort: WEEKDAYS[dow],
+    weekdayShortTitle: WEEKDAYS_SHORT_TITLE[dow],
+    weekday: WEEKDAYS_TITLE[dow],
+    month: MONTHS[mon],
+    monthTitle: MONTHS_TITLE[mon],
+    dow: dow,
+    mon: mon,
+    year: date.getFullYear(),
     dom: date.getDate()
   }
 }
@@ -77,7 +95,10 @@ function readSettings(entry) {
     clockEnabled: asBool(entry.clockEnabled, true),
     scale: clampNum(entry.scale !== undefined ? entry.scale : 1, 1, 0.4, 4),
     use24h: asBool(entry.use24h, false),
+    showSeconds: asBool(entry.showSeconds, true),
     layout: normalizeLayout(entry.layout),
+    dateShow: asBool(entry.dateShow, false),
+    dateLayout: normalizeDateLayout(entry.dateLayout),
     position: String(entry.position || "middle-center"),
     margin: clampNum(entry.margin !== undefined ? entry.margin : 24, 24, 0, 400),
     barPadding: Math.max(0, Math.round(Number(entry.barPadding) || 0)),
@@ -100,7 +121,10 @@ function settingsToEntry(pluginId, settings) {
     clockEnabled: settings.clockEnabled,
     scale: settings.scale,
     use24h: settings.use24h,
+    showSeconds: settings.showSeconds,
     layout: settings.layout,
+    dateShow: settings.dateShow,
+    dateLayout: settings.dateLayout,
     position: settings.position,
     margin: settings.margin,
     barPadding: settings.barPadding,
@@ -127,11 +151,22 @@ function mergeSettings(pluginId, base, updates) {
 
 // -------------------------------------------------------------------- layout
 
-var LAYOUTS = ["mahtab", "grand"]
+var LAYOUTS = [
+  "mahtab", "grand", "digital", "minimal", "analog", "flip", "rings",
+  "bighour", "metal", "column", "outline", "banner"
+]
 
 function normalizeLayout(value) {
   var layout = String(value || "mahtab").toLowerCase()
+  if (layout === "goodnight") layout = "mahtab"
   return LAYOUTS.indexOf(layout) >= 0 ? layout : "mahtab"
+}
+
+var DATE_LAYOUTS = ["inline", "badge", "stacked"]
+
+function normalizeDateLayout(value) {
+  var layout = String(value || "inline").toLowerCase()
+  return DATE_LAYOUTS.indexOf(layout) >= 0 ? layout : "inline"
 }
 
 // ----------------------------------------------------------------- placement
