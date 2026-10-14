@@ -215,13 +215,9 @@ Item {
         readonly property real gap: (clockHost.hasDate && clockHost.dh > 0)
           ? Math.round(14 * root.cfg.scale) : 0
 
-        // Soft halo behind the time so it reads on busy wallpapers. Dark behind
-        // light ink, light behind dark ink.
-        readonly property color inkColor: root.cfg.inkColor !== "" ? root.cfg.inkColor : Color.foreground
+        // Soft halo behind the time so it reads on busy wallpapers. Always black.
         readonly property bool shadowOn: root.cfg.shadow
-        readonly property color shadowTint: (0.299 * clockHost.inkColor.r
-          + 0.587 * clockHost.inkColor.g + 0.114 * clockHost.inkColor.b) > 0.5
-          ? Qt.rgba(0, 0, 0, 0.6) : Qt.rgba(1, 1, 1, 0.65)
+        readonly property color shadowTint: Qt.rgba(0, 0, 0, 0.6)
 
         width: Math.max(1, Math.max(clockHost.fw, clockHost.dw))
         height: Math.max(1, clockHost.fh + clockHost.gap + clockHost.dh)

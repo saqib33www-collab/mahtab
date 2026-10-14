@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Effects
 import "ClockModel.js" as Clock
 
 // Banner face: one wide line reading "hh:mm AP - MM/DD", big and calm, with a
@@ -81,14 +80,5 @@ BaseFace {
       font.pixelSize: face.px
       font.letterSpacing: face.track
     }
-  }
-
-  layer.enabled: true
-  layer.effect: MultiEffect {
-    shadowEnabled: true
-    shadowColor: face.shadowColor
-    shadowBlur: 0.7
-    shadowVerticalOffset: 0
-    shadowHorizontalOffset: 0
   }
 }
