@@ -84,3 +84,13 @@ omarchy plugin remove saqib33w.mahtab
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+### Layouts
+
+Available faces (ported from Ryoku desktop clock): `mahtab`, `grand`, `digital`, `minimal`, `analog`, `flip`, `rings`, `bighour`, `metal`, `column`, `outline`, `banner`.
+
+Set via:
+
+```bash
+omarchy bar set saqib33w.mahtab layout digital use24h true showSeconds false dateShow true dateLayout badge
+```
