@@ -1,7 +1,3 @@
-
-
-https://github.com/user-attachments/assets/5e6b20c3-76ac-4e0c-8cdc-f49cfd4024c7
-
 # Mahtab
 
 > **Mahtab** (مہتاب, "moonlight") is a clock widget **highly inspired by the
@@ -89,6 +85,7 @@ omarchy bar set saqib33w.mahtab visualizerGlow 0.8
 
 - Omarchy (Quattro) with the Omarchy shell
 - [`cava`](https://github.com/karlstav/cava) — only needed for the optional visualizer (`sudo pacman -S cava`)
+<img width="800" height="450" alt="demo" src="https://github.com/user-attachments/assets/a49bc09d-c5a3-4137-b8b3-704ec21e8a8d" />
 
 ## Install
 
