@@ -105,7 +105,7 @@ function readSettings(entry) {
     cardEnabled: asBool(entry.cardEnabled, false),
     shadow: asBool(entry.shadow, true),
     cardColor: String(entry.cardColor || ""),
-    cardAlpha: clampNum(entry.cardAlpha !== undefined ? entry.cardAlpha : 0.9, 0.9, 0, 1),
+    cardAlpha: clampNum(entry.cardAlpha !== undefined ? entry.cardAlpha : 0.7, 0.7, 0, 1),
     inkColor: String(entry.inkColor || ""),
     fontFamily: String(entry.fontFamily || ""),
     screenMode: normalizeScreenMode(entry.screenMode),

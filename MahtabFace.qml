@@ -21,8 +21,8 @@ Item {
   property string fontFamily: Style.font.family
   property bool cardEnabled: false
   property color cardColor: Color.background
-  property real cardAlpha: 0.9
-  property int cornerRadius: Style.cornerRadius
+  property real cardAlpha: 0.7
+  property int cornerRadius: Style.cornerRadius > 0 ? Style.cornerRadius : 16
   property date now: new Date()
 
   readonly property var t: Clock.clockParts(now, use24h)
