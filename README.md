@@ -78,7 +78,7 @@ omarchy bar set saqib33w.mahtab visualizerGlow 0.8
 | ![Screenshot 5](screenshots/05.png) | ![Screenshot 6](screenshots/06.png) |
 | ![Screenshot 7](screenshots/07.png) | ![Screenshot 8](screenshots/08.png) |
 | ![Screenshot 9](screenshots/09.png) | ![Screenshot 10](screenshots/10.png) |
-| ![Screenshot 11](screenshots/11.png) | |
+| ![Screenshot 11](screenshots/11.png) | <video src="https://github.com/user-attachments/assets/5e6b20c3-76ac-4e0c-8cdc-f49cfd4024c7" controls muted loop width="100%"></video> |
 
 ## Credits
 
