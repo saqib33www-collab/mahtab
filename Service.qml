@@ -7,6 +7,7 @@ import Quickshell.Wayland
 import qs.Commons
 import qs.Ui
 import "ClockModel.js" as Clock
+import "Spectrum.js" as Sp
 import "PluginConfig.js" as Config
 
 // Renders the "Mahtab" clock on the wallpaper layer (below windows), one
@@ -22,6 +23,7 @@ Item {
   readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.mahtab"
   readonly property var cfg: Clock.readSettings(liveConfig.entry || { id: root.pluginId })
   readonly property var pos: Clock.parsePosition(root.cfg.position)
+  readonly property bool vizOn: root.cfg.visualizer === true
 
   ShellConfigWatcher {
     id: liveConfig
@@ -167,7 +169,11 @@ Item {
 
   Component.onCompleted: {
     if (Clock.needsInternalMonitorName(root.cfg.screenMode)) root.refreshMonitorNames()
+    root.resetSpectrum()
+    if (root.vizOn) root.startCava()
   }
+
+  Component.onDestruction: root.stopCava()
 
   function refreshMonitorNames() {
     if (monitorStateProc.running) return
@@ -194,6 +200,162 @@ Item {
     }
   }
 
+  // ----------------------------------------------------------- audio visualizer
+
+  readonly property int vizAsciiMax: 1000
+  // cava.conf ships next to this file; resolve it relative to Service.qml.
+  readonly property string cavaConfigPath:
+    Qt.resolvedUrl("cava.conf").toString().replace("file://", "")
+
+  // `vizRaw` holds the latest cava targets, `spectrum` the eased levels the
+  // shader actually draws, `vizPeaks` the falling peak caps and `vizEnergy` the
+  // peak level; all shared so one cava process drives every monitor.
+  property var vizRaw: []
+  property var spectrum: []
+  property var vizPeaks: []
+  property real vizEnergy: 0
+
+  // Set by the settings panel while it is open. The visualizer keeps previewing
+  // but at a lower rate, so the full-surface shader stops competing with the
+  // panel for the GPU.
+  property bool settingsOpen: false
+
+  // True while the motion timer should run: sound is arriving, or the eased
+  // levels / peaks have not settled at rest yet.
+  property bool _vizActive: false
+
+  function resetSpectrum() {
+    var n = root.cfg.visualizerBars
+    var seed = []
+    for (var i = 0; i < n; i++) seed.push(0)
+    root.vizRaw = seed.slice()
+    root.spectrum = seed.slice()
+    root.vizPeaks = seed.slice()
+    root.vizEnergy = 0
+    root._vizActive = false
+  }
+
+  function startCava() { if (!cava.running) cava.running = true }
+  function stopCava() { if (cava.running) cava.running = false }
+
+  // cava hands us raw band magnitudes. We only resample them to the bar count
+  // here; the easing that makes the motion smooth runs on the motion timer at
+  // the display rate, so it is never tied to cava's own frame pacing.
+  function handleFrame(line) {
+    if (!root.vizOn) return
+    var raw = Sp.parseFrame(line, root.vizAsciiMax)
+    if (raw.length === 0) return
+    var target = Sp.resampleBands(
+      raw, root.cfg.visualizerBars, root.cfg.visualizerSensitivity
+    )
+    root.vizRaw = target
+    var mx = 0
+    for (var i = 0; i < target.length; i++) if (target[i] > mx) mx = target[i]
+    if (mx > 0.003 && !root._vizActive) {
+      root._vizActive = true
+      vizTicker.last = 0
+      vizTicker.dwell = 0
+    }
+  }
+
+  // One eased step toward the latest cava targets. attack/decay are time
+  // constants, so the motion looks identical at any tick rate.
+  function vizTick(dt) {
+    var n = root.cfg.visualizerBars
+    var raw = root.vizRaw
+    var prev = root.spectrum
+    var out = []
+    var sum = 0
+    var mx = 0
+    for (var i = 0; i < n; i++) {
+      var target = i < raw.length ? raw[i] : 0
+      var cur = i < prev.length ? prev[i] : 0
+      var v = Sp.ease(cur, target, dt, 0.03, 0.15)
+      out.push(v)
+      sum += v
+      if (v > mx) mx = v
+    }
+    var pk = root.vizPeaks
+    var np = []
+    var peakMax = 0
+    for (var p = 0; p < n; p++) {
+      var cap = (p < pk.length ? pk[p] : 0) - dt * 0.5
+      if (cap < 0) cap = 0
+      var pv = out[p] > cap ? out[p] : cap
+      np.push(pv)
+      if (pv > peakMax) peakMax = pv
+    }
+    root.spectrum = out
+    root.vizPeaks = np
+    root.vizEnergy = mx
+
+    // Settle once at zero, then stop ticking so a still picture is not
+    // repainted. A later cava frame re-arms the timer.
+    if (mx < 0.002 && peakMax < 0.002)
+      root._vizActive = false
+  }
+
+  // The motion clock: a steady 30 fps (Ryoku's default), not vsync, so the
+  // easing is regular and never inherits cava's frame pacing. It halves while
+  // the settings panel is open and drops a tier under sustained load, and stops
+  // entirely at rest.
+  Timer {
+    id: vizTicker
+    property real last: 0
+    property real overrun: 1
+    property int tier: 0
+    property double dwell: 0
+
+    readonly property int baseFps: root.settingsOpen ? 15 : 30
+    readonly property int fps: vizTicker.tier === 0
+      ? vizTicker.baseFps : Math.max(12, Math.round(vizTicker.baseFps * 0.6))
+    interval: Math.round(1000 / vizTicker.fps)
+    repeat: true
+    running: root.vizOn && root._vizActive
+
+    onTriggered: {
+      var now = Date.now()
+      var asked = vizTicker.interval / 1000
+      var dt = vizTicker.last > 0 ? (now - vizTicker.last) / 1000 : asked
+      vizTicker.last = now
+      if (vizTicker.dwell === 0) vizTicker.dwell = now
+      // Climb a tier on a slow average of the overrun, with a dwell, so a single
+      // hitch never trips a change.
+      vizTicker.overrun += (Math.min(3, dt / asked) - vizTicker.overrun) * 0.1
+      if (now - vizTicker.dwell > 2500) {
+        if (vizTicker.overrun > 1.6 && vizTicker.tier === 0) {
+          vizTicker.tier = 1
+          vizTicker.dwell = now
+        } else if (vizTicker.overrun < 1.15 && vizTicker.tier === 1) {
+          vizTicker.tier = 0
+          vizTicker.dwell = now
+        }
+      }
+      root.vizTick(Math.min(0.05, dt))
+    }
+  }
+
+  Process {
+    id: cava
+    command: ["cava", "-p", root.cavaConfigPath]
+    stdout: SplitParser {
+      onRead: function(line) { root.handleFrame(line) }
+    }
+    onExited: if (root.vizOn) cavaRestart.restart()
+  }
+
+  // A moment after cava dies, bring it back — but only while the visualizer is
+  // meant to be up, and not on top of an immediate restart storm.
+  Timer {
+    id: cavaRestart
+    interval: 1500
+    repeat: false
+    onTriggered: if (root.vizOn) root.startCava()
+  }
+
+  onCfgChanged: root.resetSpectrum()
+  onVizOnChanged: root.vizOn ? root.startCava() : root.stopCava()
+
   Variants {
     model: Quickshell.screens
 
@@ -204,22 +366,29 @@ Item {
       readonly property bool screenActive: Clock.screenReady(modelData)
       readonly property bool editingHere: root.editActive && screenActive
         && (root.focusedMonitorName === "" || String(modelData.name) === root.focusedMonitorName)
+      readonly property bool clockShown: root.cfg.clockEnabled !== false
+        && root.shouldShowOnScreen(modelData)
       readonly property bool clockVisible: screenActive
         && !remapGuard.remapping
-        && (root.editActive
-              ? editingHere
-              : (root.cfg.clockEnabled !== false && root.shouldShowOnScreen(modelData)))
+        && (root.editActive ? editingHere : panel.clockShown)
+      // The optional visualizer strip shares the clock's screen targeting.
+      readonly property bool spectrumVisible: screenActive
+        && !remapGuard.remapping
+        && root.vizOn
+        && root.shouldShowOnScreen(modelData)
 
       screen: modelData
-      visible: clockVisible
+      visible: panel.clockVisible || panel.spectrumVisible
       anchors { top: true; bottom: true; left: true; right: true }
       color: "transparent"
       // While editing, or while the clock is being grabbed directly, take over
       // the whole surface so the drag never loses the pointer. Otherwise clip
       // input to the clock so a right-click on it can open settings — windows
-      // sit above this layer, so it only takes clicks on empty wallpaper.
+      // sit above this layer, so it only takes clicks on empty wallpaper. When
+      // only the (input-free) spectrum is up, the mask stays empty so clicks
+      // fall straight through.
       mask: root.pointerDragActive ? null
-        : (panel.clockVisible ? clockMask : null)
+        : (panel.clockVisible ? clockMask : emptyMask)
 
       ScreenMoveRemap {
         id: remapGuard
@@ -241,6 +410,12 @@ Item {
         item: clockHost
       }
 
+      // Empty input region: makes the surface fully click-through when only the
+      // decorative spectrum is visible.
+      Region {
+        id: emptyMask
+      }
+
       FocusScope {
         anchors.fill: parent
         visible: panel.editingHere
@@ -250,6 +425,38 @@ Item {
           root.commitClockDrag(clockHost, panel)
           root.endDragEdit()
         }
+      }
+
+      // Optional audio visualizer, sharing the clock's surface so a polar or
+      // frame look gets the whole panel to work with. Purely decorative: the
+      // surface's input mask never covers it.
+      VisualizerStrip {
+        id: spectrumStrip
+        visible: panel.spectrumVisible
+        anchors.fill: parent
+        opacity: root.cfg.visualizerOpacity
+
+        levels: root.spectrum
+        peaks: root.vizPeaks
+        energy: root.vizEnergy
+
+        style: root.cfg.visualizerStyle
+        shape: root.cfg.visualizerShape
+        colorMode: root.cfg.visualizerColor
+        thickness: root.cfg.visualizerThickness
+        glow: root.cfg.visualizerGlow
+        reflection: root.cfg.visualizerReflection
+        segments: root.cfg.visualizerSegments
+        peakCaps: root.cfg.visualizerPeaks
+
+        // The look's box: a full-width band the width/height/margin settings
+        // size and lift off the bottom edge. A polar look centres in it; a frame
+        // look ignores it and wraps the whole panel.
+        boxW: root.cfg.visualizerWidth
+        boxX: (1 - root.cfg.visualizerWidth) / 2
+        boxH: Math.min(1, root.cfg.visualizerHeight / Math.max(1, panel.height))
+        boxY: Math.max(0, 1 - boxH - root.cfg.visualizerMargin / Math.max(1, panel.height))
+        grow: "up"
       }
 
       Item {

@@ -24,6 +24,7 @@ windows, so it only shows on an empty desktop.
 - Resize by scrolling over the clock — no settings panel needed
 - Multi-monitor targeting: all, primary, focused, or external only
 - Live settings through a right-click panel — no shell reload required
+- Optional **audio visualizer** on the wallpaper — twelve GPU-drawn styles, fed by `cava`
 
 ## Layout styles
 
@@ -32,6 +33,37 @@ windows, so it only shows on an empty desktop.
   accent colour. Ported from the Ryoku shell's `ClockGrand` face.
 
 Pick a style under **Layout → Layout style** in the settings panel.
+
+## Visualizer
+
+Mahtab can also paint a live audio spectrum on the wallpaper, behind your
+windows. It is fed by [`cava`](https://github.com/karlstav/cava) with the
+bundled `cava.conf`; toggle **Visualizer** in the settings panel. Rendering is a
+single GPU pass (the shared `SpectrumField` shader, ported from the Ryoku shell),
+so every look is cheap.
+
+Twelve styles:
+
+| | | |
+|---|---|---|
+| Bars | Split | Dots |
+| Segments | Wave | Ribbon |
+| Curtain | Line (scope) | Frame |
+| Radial | Orb | Spiral |
+
+Plus:
+
+- **Shape** — Rounded or Sharp band caps
+- **Colour** — Accent, Foreground, Rainbow, or White
+- **Height**, **Bars**, **Width**, **Sensitivity**, **Opacity**, **Bottom margin**
+- **Thickness**, **Glow**, **Reflection**, **Segments**, and **Peak caps**
+
+```sh
+omarchy bar set saqib33w.mahtab visualizer true
+omarchy bar set saqib33w.mahtab visualizerStyle radial
+omarchy bar set saqib33w.mahtab visualizerColor rainbow
+omarchy bar set saqib33w.mahtab visualizerGlow 0.8
+```
 
 ## Screenshots
 
@@ -52,7 +84,7 @@ Pick a style under **Layout → Layout style** in the settings panel.
 ## Requirements
 
 - Omarchy (Quattro) with the Omarchy shell
-- No external dependencies
+- [`cava`](https://github.com/karlstav/cava) — only needed for the optional visualizer (`sudo pacman -S cava`)
 
 ## Install
 

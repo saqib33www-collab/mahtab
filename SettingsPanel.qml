@@ -19,9 +19,14 @@ Item {
   property bool opened: false
   property bool closingFromHost: false
 
+  // Let the service throttle the wallpaper visualizer's repaint rate while this
+  // panel is up, so configuring settings stays responsive during music.
+  onOpenedChanged: if (service) service.settingsOpen = root.opened
+
   readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.mahtab"
   readonly property bool popupBlocked: screenModeField.popupOpen
     || layoutField.popupOpen || dateField.popupOpen
+    || vizStyleField.popupOpen || vizShapeField.popupOpen || vizColorField.popupOpen
 
   readonly property color scrim: Color.menu.scrim
   readonly property color cardBackground: Color.popups.background
@@ -32,6 +37,9 @@ Item {
   readonly property int contentGap: Style.space(16)
 
   property var draft: Clock.readSettings({})
+
+  // Which group of settings the panel shows; the footer symbols switch it.
+  property string settingsTab: "clock"
 
   readonly property var screenModeOptions: [
     { value: "all", label: "All monitors" },
@@ -59,6 +67,33 @@ Item {
     { value: "inline", label: "Inline" },
     { value: "badge", label: "Badge" },
     { value: "stacked", label: "Stacked (calendar)" }
+  ]
+
+  readonly property var vizStyleOptions: [
+    { value: "bars", label: "Bars" },
+    { value: "split", label: "Split" },
+    { value: "dots", label: "Dots" },
+    { value: "segments", label: "Segments" },
+    { value: "wave", label: "Wave" },
+    { value: "ribbon", label: "Ribbon" },
+    { value: "curtain", label: "Curtain" },
+    { value: "line", label: "Line (scope)" },
+    { value: "frame", label: "Frame" },
+    { value: "radial", label: "Radial" },
+    { value: "orb", label: "Orb" },
+    { value: "spiral", label: "Spiral" }
+  ]
+
+  readonly property var vizShapeOptions: [
+    { value: "rounded", label: "Rounded" },
+    { value: "sharp", label: "Sharp" }
+  ]
+
+  readonly property var vizColorOptions: [
+    { value: "accent", label: "Theme accent" },
+    { value: "foreground", label: "Theme text" },
+    { value: "rainbow", label: "Rainbow" },
+    { value: "white", label: "White" }
   ]
 
   readonly property var fakeBar: QtObject {
@@ -215,116 +250,357 @@ Item {
               - titleBlock.height
               - hintBlock.height
               - headerSep.height
-              - root.contentGap * 3
+              - footerSep.height
+              - footer.height
+              - root.contentGap * 5
             clip: true
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+            // A slim bar that stays visible on the right edge rather than
+            // fading out, so it always reads as a scrollable list.
+            ScrollBar.vertical: ScrollBar {
+              id: vbar
+              policy: ScrollBar.AlwaysOn
+              width: Style.space(6)
+              contentItem: Rectangle {
+                implicitWidth: Style.space(6)
+                radius: width / 2
+                color: vbar.pressed
+                  ? Color.foreground
+                  : Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.35)
+              }
+              background: Rectangle {
+                radius: width / 2
+                color: Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.08)
+              }
+            }
 
             Column {
               width: scroll.availableWidth
               spacing: root.contentGap
 
-              PanelSectionHeader {
+              Column {
+                id: clockView
                 width: parent.width
-                text: "Visibility"
+                spacing: root.contentGap
+                visible: root.settingsTab === "clock"
+
+                SectionHeader {
+                  width: parent.width
+                  kind: "clock"
+                  text: "Visibility"
+                }
+
+                Toggle {
+                  width: parent.width
+                  label: "Show clock"
+                  description: "Master visibility toggle for the wallpaper clock."
+                  checked: root.draft.clockEnabled
+                  onClicked: root.patchDraft({ clockEnabled: !root.draft.clockEnabled })
+                }
+
+                Toggle {
+                  width: parent.width
+                  label: "Show card"
+                  description: "Draw a rounded card behind the clock for readability on busy wallpapers."
+                  checked: root.draft.cardEnabled
+                  onClicked: root.patchDraft({ cardEnabled: !root.draft.cardEnabled })
+                }
+
+                Toggle {
+                  width: parent.width
+                  label: "Text shadow"
+                  description: "Draw a soft halo behind the time and date so they stay legible on busy wallpapers."
+                  checked: root.draft.shadow
+                  onClicked: root.patchDraft({ shadow: !root.draft.shadow })
+                }
+
+                PanelSeparator { width: parent.width }
+
+                SectionHeader {
+                  width: parent.width
+                  kind: "clock"
+                  text: "Layout"
+                }
+
+                Dropdown {
+                  id: layoutField
+                  width: parent.width
+                  label: "Layout style"
+                  value: root.draft.layout
+                  options: root.layoutOptions
+                  onChanged: function(v) { root.patchDraft({ layout: v }) }
+                }
+
+                Text {
+                  width: parent.width
+                  wrapMode: Text.WordWrap
+                  text: "Drag the clock on the wallpaper to move it, and scroll over it to resize."
+                  color: Qt.darker(Color.foreground, 1.35)
+                  font.family: Style.font.family
+                  font.pixelSize: Style.font.caption
+                }
+
+                Dropdown {
+                  id: screenModeField
+                  width: parent.width
+                  label: "Show on"
+                  value: root.draft.screenMode
+                  options: root.screenModeOptions
+                  onChanged: function(v) { root.patchDraft({ screenMode: v }) }
+                }
+
+                PanelSeparator { width: parent.width }
+
+                SectionHeader {
+                  width: parent.width
+                  kind: "clock"
+                  text: "Time"
+                }
+
+                Toggle {
+                  width: parent.width
+                  label: "24-hour clock"
+                  description: "Show the hour in 24-hour format instead of 12-hour."
+                  checked: root.draft.use24h
+                  onClicked: root.patchDraft({ use24h: !root.draft.use24h })
+                }
+
+                Toggle {
+                  width: parent.width
+                  label: "Show seconds"
+                  description: "Show the seconds where the layout has room for them."
+                  checked: root.draft.showSeconds
+                  onClicked: root.patchDraft({ showSeconds: !root.draft.showSeconds })
+                }
+
+                Toggle {
+                  width: parent.width
+                  label: "Show date"
+                  description: "Stack a date strip centred under the time."
+                  checked: root.draft.dateShow
+                  onClicked: root.patchDraft({ dateShow: !root.draft.dateShow })
+                }
+
+                Dropdown {
+                  id: dateField
+                  width: parent.width
+                  visible: root.draft.dateShow
+                  label: "Date style"
+                  value: root.draft.dateLayout
+                  options: root.dateLayoutOptions
+                  onChanged: function(v) { root.patchDraft({ dateLayout: v }) }
+                }
               }
 
-              Toggle {
+              Column {
+                id: vizView
                 width: parent.width
-                label: "Show clock"
-                description: "Master visibility toggle for the wallpaper clock."
-                checked: root.draft.clockEnabled
-                onClicked: root.patchDraft({ clockEnabled: !root.draft.clockEnabled })
-              }
+                spacing: root.contentGap
+                visible: root.settingsTab === "viz"
 
-              Toggle {
-                width: parent.width
-                label: "Show card"
-                description: "Draw a rounded card behind the clock for readability on busy wallpapers."
-                checked: root.draft.cardEnabled
-                onClicked: root.patchDraft({ cardEnabled: !root.draft.cardEnabled })
-              }
+                SectionHeader { width: parent.width; kind: "viz"; text: "Visualizer" }
 
-              Toggle {
-                width: parent.width
-                label: "Text shadow"
-                description: "Draw a soft halo behind the time and date so they stay legible on busy wallpapers."
-                checked: root.draft.shadow
-                onClicked: root.patchDraft({ shadow: !root.draft.shadow })
-              }
+                Toggle {
+                  width: parent.width
+                  label: "Audio visualizer"
+                  description: "Draw a cava audio spectrum on the wallpaper, behind your windows."
+                  checked: root.draft.visualizer
+                  onClicked: root.patchDraft({ visualizer: !root.draft.visualizer })
+                }
 
-              PanelSeparator { width: parent.width }
+                Dropdown {
+                  id: vizStyleField
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  label: "Visualizer style"
+                  value: root.draft.visualizerStyle
+                  options: root.vizStyleOptions
+                  onChanged: function(v) { root.patchDraft({ visualizerStyle: v }) }
+                }
 
-              PanelSectionHeader {
-                width: parent.width
-                text: "Layout"
-              }
+                Dropdown {
+                  id: vizShapeField
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  label: "Visualizer shape"
+                  value: root.draft.visualizerShape
+                  options: root.vizShapeOptions
+                  onChanged: function(v) { root.patchDraft({ visualizerShape: v }) }
+                }
 
-              Dropdown {
-                id: layoutField
-                width: parent.width
-                label: "Layout style"
-                value: root.draft.layout
-                options: root.layoutOptions
-                onChanged: function(v) { root.patchDraft({ layout: v }) }
-              }
+                Dropdown {
+                  id: vizColorField
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  label: "Visualizer color"
+                  value: root.draft.visualizerColor
+                  options: root.vizColorOptions
+                  onChanged: function(v) { root.patchDraft({ visualizerColor: v }) }
+                }
 
-              Text {
-                width: parent.width
-                wrapMode: Text.WordWrap
-                text: "Drag the clock on the wallpaper to move it, and scroll over it to resize."
-                color: Qt.darker(Color.foreground, 1.35)
-                font.family: Style.font.family
-                font.pixelSize: Style.font.caption
-              }
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer height"
+                  helpText: "Height of the tallest bars, in pixels."
+                  minimum: 16
+                  maximum: 900
+                  step: 2
+                  integer: true
+                  value: root.draft.visualizerHeight
+                  valueText: Math.round(root.draft.visualizerHeight) + "px"
+                  onMoved: function(v) { root.setDraft({ visualizerHeight: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerHeight: v }) }
+                }
 
-              Dropdown {
-                id: screenModeField
-                width: parent.width
-                label: "Show on"
-                value: root.draft.screenMode
-                options: root.screenModeOptions
-                onChanged: function(v) { root.patchDraft({ screenMode: v }) }
-              }
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer bottom margin"
+                  helpText: "Distance from the bottom screen edge, in pixels."
+                  minimum: 0
+                  maximum: 200
+                  step: 2
+                  integer: true
+                  value: root.draft.visualizerMargin
+                  valueText: Math.round(root.draft.visualizerMargin) + "px"
+                  onMoved: function(v) { root.setDraft({ visualizerMargin: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerMargin: v }) }
+                }
 
-              PanelSeparator { width: parent.width }
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer bars"
+                  helpText: "Number of spectrum bands."
+                  minimum: 4
+                  maximum: 128
+                  step: 1
+                  integer: true
+                  value: root.draft.visualizerBars
+                  valueText: String(Math.round(root.draft.visualizerBars))
+                  onMoved: function(v) { root.setDraft({ visualizerBars: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerBars: v }) }
+                }
 
-              PanelSectionHeader {
-                width: parent.width
-                text: "Time"
-              }
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer width"
+                  helpText: "Share of the screen width the spectrum spans."
+                  minimum: 0.1
+                  maximum: 1
+                  step: 0.05
+                  value: root.draft.visualizerWidth
+                  valueText: Math.round(root.draft.visualizerWidth * 100) + "%"
+                  onMoved: function(v) { root.setDraft({ visualizerWidth: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerWidth: v }) }
+                }
 
-              Toggle {
-                width: parent.width
-                label: "24-hour clock"
-                description: "Show the hour in 24-hour format instead of 12-hour."
-                checked: root.draft.use24h
-                onClicked: root.patchDraft({ use24h: !root.draft.use24h })
-              }
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer thickness"
+                  helpText: "Band width as a share of its slot."
+                  minimum: 0.05
+                  maximum: 1
+                  step: 0.05
+                  value: root.draft.visualizerThickness
+                  valueText: Math.round(root.draft.visualizerThickness * 100) + "%"
+                  onMoved: function(v) { root.setDraft({ visualizerThickness: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerThickness: v }) }
+                }
 
-              Toggle {
-                width: parent.width
-                label: "Show seconds"
-                description: "Show the seconds where the layout has room for them."
-                checked: root.draft.showSeconds
-                onClicked: root.patchDraft({ showSeconds: !root.draft.showSeconds })
-              }
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer glow"
+                  helpText: "Bloom around each band."
+                  minimum: 0
+                  maximum: 1
+                  step: 0.05
+                  value: root.draft.visualizerGlow
+                  valueText: Math.round(root.draft.visualizerGlow * 100) + "%"
+                  onMoved: function(v) { root.setDraft({ visualizerGlow: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerGlow: v }) }
+                }
 
-              Toggle {
-                width: parent.width
-                label: "Show date"
-                description: "Stack a date strip centred under the time."
-                checked: root.draft.dateShow
-                onClicked: root.patchDraft({ dateShow: !root.draft.dateShow })
-              }
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer reflection"
+                  helpText: "Mirror the bars below the baseline."
+                  minimum: 0
+                  maximum: 1
+                  step: 0.05
+                  value: root.draft.visualizerReflection
+                  valueText: Math.round(root.draft.visualizerReflection * 100) + "%"
+                  onMoved: function(v) { root.setDraft({ visualizerReflection: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerReflection: v }) }
+                }
 
-              Dropdown {
-                id: dateField
-                width: parent.width
-                visible: root.draft.dateShow
-                label: "Date style"
-                value: root.draft.dateLayout
-                options: root.dateLayoutOptions
-                onChanged: function(v) { root.patchDraft({ dateLayout: v }) }
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer segments"
+                  helpText: "Slices per band for the Segments style."
+                  minimum: 3
+                  maximum: 24
+                  step: 1
+                  integer: true
+                  value: root.draft.visualizerSegments
+                  valueText: String(Math.round(root.draft.visualizerSegments))
+                  onMoved: function(v) { root.setDraft({ visualizerSegments: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerSegments: v }) }
+                }
+
+                Toggle {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  label: "Visualizer peak caps"
+                  description: "Falling caps above each bar (Bars and Segments)."
+                  checked: root.draft.visualizerPeaks
+                  onClicked: root.patchDraft({ visualizerPeaks: !root.draft.visualizerPeaks })
+                }
+
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer sensitivity"
+                  helpText: "Amplitude multiplier applied to every bar."
+                  minimum: 0.1
+                  maximum: 4
+                  step: 0.1
+                  value: root.draft.visualizerSensitivity
+                  valueText: root.draft.visualizerSensitivity.toFixed(1) + "x"
+                  onMoved: function(v) { root.setDraft({ visualizerSensitivity: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerSensitivity: v }) }
+                }
+
+                SettingsSlider {
+                  width: parent.width
+                  visible: root.draft.visualizer
+                  bar: root.fakeBar
+                  label: "Visualizer opacity"
+                  helpText: "Peak opacity of the bars."
+                  minimum: 0
+                  maximum: 1
+                  step: 0.05
+                  value: root.draft.visualizerOpacity
+                  valueText: Math.round(root.draft.visualizerOpacity * 100) + "%"
+                  onMoved: function(v) { root.setDraft({ visualizerOpacity: v }) }
+                  onReleased: function(v) { root.patchDraft({ visualizerOpacity: v }) }
+                }
               }
 
               PanelSeparator { width: parent.width }
@@ -334,7 +610,7 @@ Item {
                 text: "Reset to defaults"
                 bordered: true
                 focusable: true
-                onClicked: root.resetDefaults()
+                onClicked: root.resetToDefaults()
               }
 
               Item {
@@ -342,6 +618,16 @@ Item {
                 height: Style.space(12)
               }
             }
+          }
+
+          PanelSeparator { id: footerSep; width: parent.width }
+
+          SymbolFooter {
+            id: footer
+            width: parent.width
+            active: root.settingsTab
+            foreground: Color.foreground
+            onSelected: function(tab) { root.settingsTab = tab }
           }
         }
       }

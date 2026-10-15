@@ -111,7 +111,23 @@ function readSettings(entry) {
     screenMode: normalizeScreenMode(entry.screenMode),
     positionMode: String(entry.positionMode || "anchor") === "free" ? "free" : "anchor",
     posX: clampNum(entry.posX !== undefined ? entry.posX : 0.5, 0.5, -2, 3),
-    posY: clampNum(entry.posY !== undefined ? entry.posY : 0.5, 0.5, -2, 3)
+    posY: clampNum(entry.posY !== undefined ? entry.posY : 0.5, 0.5, -2, 3),
+    // Optional audio visualizer (cava) on the wallpaper.
+    visualizer: asBool(entry.visualizer, false),
+    visualizerStyle: normalizeVizStyle(entry.visualizerStyle || entry.visualizerLayout),
+    visualizerShape: normalizeVizShape(entry.visualizerShape),
+    visualizerColor: normalizeVizColor(entry.visualizerColor),
+    visualizerHeight: clampNum(entry.visualizerHeight !== undefined ? entry.visualizerHeight : 120, 120, 8, 900),
+    visualizerBars: Math.round(clampNum(entry.visualizerBars !== undefined ? entry.visualizerBars : 48, 48, 4, 128)),
+    visualizerWidth: clampNum(entry.visualizerWidth !== undefined ? entry.visualizerWidth : 1, 1, 0.1, 1),
+    visualizerSensitivity: clampNum(entry.visualizerSensitivity !== undefined ? entry.visualizerSensitivity : 1, 1, 0.1, 5),
+    visualizerOpacity: clampNum(entry.visualizerOpacity !== undefined ? entry.visualizerOpacity : 1, 1, 0, 1),
+    visualizerMargin: Math.max(0, Math.round(Number(entry.visualizerMargin) || 16)),
+    visualizerThickness: clampNum(entry.visualizerThickness !== undefined ? entry.visualizerThickness : 0.58, 0.58, 0.05, 1),
+    visualizerGlow: clampNum(entry.visualizerGlow !== undefined ? entry.visualizerGlow : 0.6, 0.6, 0, 1),
+    visualizerReflection: clampNum(entry.visualizerReflection !== undefined ? entry.visualizerReflection : 0, 0, 0, 1),
+    visualizerSegments: Math.round(clampNum(entry.visualizerSegments !== undefined ? entry.visualizerSegments : 10, 10, 3, 24)),
+    visualizerPeaks: asBool(entry.visualizerPeaks, false)
   }
 }
 
@@ -138,7 +154,22 @@ function settingsToEntry(pluginId, settings) {
     screenMode: settings.screenMode,
     positionMode: settings.positionMode,
     posX: settings.posX,
-    posY: settings.posY
+    posY: settings.posY,
+    visualizer: settings.visualizer,
+    visualizerStyle: settings.visualizerStyle,
+    visualizerShape: settings.visualizerShape,
+    visualizerColor: settings.visualizerColor,
+    visualizerHeight: settings.visualizerHeight,
+    visualizerBars: settings.visualizerBars,
+    visualizerWidth: settings.visualizerWidth,
+    visualizerSensitivity: settings.visualizerSensitivity,
+    visualizerOpacity: settings.visualizerOpacity,
+    visualizerMargin: settings.visualizerMargin,
+    visualizerThickness: settings.visualizerThickness,
+    visualizerGlow: settings.visualizerGlow,
+    visualizerReflection: settings.visualizerReflection,
+    visualizerSegments: settings.visualizerSegments,
+    visualizerPeaks: settings.visualizerPeaks
   }
 }
 
@@ -169,6 +200,31 @@ var DATE_LAYOUTS = ["inline", "badge", "stacked"]
 function normalizeDateLayout(value) {
   var layout = String(value || "inline").toLowerCase()
   return DATE_LAYOUTS.indexOf(layout) >= 0 ? layout : "inline"
+}
+
+// ----------------------------------------------------------------- visualizer
+
+// The twelve looks the shared SpectrumField shader draws, in shader order.
+var VIZ_STYLES = ["bars", "split", "dots", "segments", "wave", "ribbon",
+                  "curtain", "line", "frame", "radial", "orb", "spiral"]
+
+function normalizeVizStyle(value) {
+  var style = String(value || "bars").toLowerCase()
+  return VIZ_STYLES.indexOf(style) >= 0 ? style : "bars"
+}
+
+var VIZ_SHAPES = ["rounded", "sharp"]
+
+function normalizeVizShape(value) {
+  var shape = String(value || "rounded").toLowerCase()
+  return VIZ_SHAPES.indexOf(shape) >= 0 ? shape : "rounded"
+}
+
+var VIZ_COLORS = ["accent", "foreground", "rainbow", "white"]
+
+function normalizeVizColor(value) {
+  var mode = String(value || "accent").toLowerCase()
+  return VIZ_COLORS.indexOf(mode) >= 0 ? mode : "accent"
 }
 
 // ----------------------------------------------------------------- placement
