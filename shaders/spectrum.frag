@@ -438,9 +438,10 @@ void main() {
     }
 
     float body = 1.0 - smoothstep(-aa, aa, sd);
-    // Roots read as light rather than paint: the shape fades toward where it
-    // grows from, and only the tip carries full weight.
-    float cover = clamp(body * fillA * mix(0.66, 1.0, lift) + extraA, 0.0, 1.0);
+    // The body is paint, not light: fully opaque from root to tip, so the bars
+    // read solid against the wallpaper. Looks with their own translucency (the
+    // glass orb) still set it through fillA.
+    float cover = clamp(body * fillA + extraA, 0.0, 1.0);
 
     // Two-term bloom outside the shape: a tight bright core and a wide soft
     // skirt. It must not reach inside, or a filled look (the orb, the wave)
@@ -453,8 +454,9 @@ void main() {
 
     float a = clamp(cover + halo, 0.0, 1.0) * fade * mirrorFade * qt_Opacity;
     // Edge looks melt into the wallpaper at both ends instead of being cut off;
-    // the frame wraps, so it has no ends to fade.
-    if (!polar && !frame)
+    // the frame wraps, so it has no ends to fade. Bars are exempt: they stay
+    // solid edge to edge, since a fading end bar reads as translucency.
+    if (!polar && !frame && st != 0)
         a *= smoothstep(0.0, 0.035, along) * (1.0 - smoothstep(0.965, 1.0, along));
     if (a <= 0.002) {
         fragColor = vec4(0.0);
