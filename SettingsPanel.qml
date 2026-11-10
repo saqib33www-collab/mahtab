@@ -27,6 +27,7 @@ Item {
   readonly property bool popupBlocked: screenModeField.popupOpen
     || layoutField.popupOpen || dateField.popupOpen
     || vizStyleField.popupOpen || vizShapeField.popupOpen || vizColorField.popupOpen
+    || fontField.popupOpen
 
   readonly property color scrim: Color.menu.scrim
   readonly property color cardBackground: Color.popups.background
@@ -96,6 +97,27 @@ Item {
     { value: "white", label: "White" }
   ]
 
+  // Every font family installed on the system, asked from Qt's font database
+  // the first time the panel opens so late installs are found too. The leading
+  // "" option keeps the manifest default reachable, so the clock can always go
+  // back to following the Omarchy theme font.
+  property var fontOptions: [
+    { value: "", label: "Shell default", description: "Follows the Omarchy theme font" }
+  ]
+  property bool fontOptionsLoaded: false
+
+  function loadFontOptions() {
+    if (root.fontOptionsLoaded) return
+    root.fontOptionsLoaded = true
+    var out = [{ value: "", label: "Shell default", description: "Follows the Omarchy theme font" }]
+    var fams = Qt.fontFamilies()
+    var names = []
+    for (var i = 0; i < fams.length; i++) names.push(String(fams[i]))
+    names.sort(function(a, b) { return a.localeCompare(b) })
+    for (var j = 0; j < names.length; j++) out.push({ value: names[j], label: names[j] })
+    root.fontOptions = out
+  }
+
   readonly property var fakeBar: QtObject {
     readonly property color foreground: Color.foreground
     readonly property color background: Color.background
@@ -143,6 +165,7 @@ Item {
     // saved settings.
     if (liveConfig) liveConfig.refresh()
     draft = Clock.readSettings(pluginEntry())
+    root.loadFontOptions()
     root.opened = true
     Qt.callLater(function() {
       if (keyCatcher) keyCatcher.forceActiveFocus()
@@ -348,6 +371,32 @@ Item {
                   value: root.draft.screenMode
                   options: root.screenModeOptions
                   onChanged: function(v) { root.patchDraft({ screenMode: v }) }
+                }
+
+                PanelSeparator { width: parent.width }
+
+                SectionHeader {
+                  width: parent.width
+                  kind: "clock"
+                  text: "Typeface"
+                }
+
+                SearchableDropdown {
+                  id: fontField
+                  width: parent.width
+                  label: "Clock font"
+                  value: root.draft.fontFamily
+                  options: root.fontOptions
+                  onChanged: function(v) { root.patchDraft({ fontFamily: v }) }
+                }
+
+                Text {
+                  width: parent.width
+                  wrapMode: Text.WordWrap
+                  text: "Every font installed on the system, searchable by name. Shell default follows the Omarchy theme font."
+                  color: Qt.darker(Color.foreground, 1.35)
+                  font.family: Style.font.family
+                  font.pixelSize: Style.font.caption
                 }
 
                 PanelSeparator { width: parent.width }

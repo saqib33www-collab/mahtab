@@ -495,7 +495,15 @@ Item {
           item.cardAlpha = root.cfg.cardAlpha
           if ("showSeconds" in item) item.showSeconds = root.cfg.showSeconds
           if ("cardColor" in item && root.cfg.cardColor !== "") item.cardColor = root.cfg.cardColor
-          if ("fontFamily" in item && root.cfg.fontFamily !== "") item.fontFamily = root.cfg.fontFamily
+          if ("fontFamily" in item) {
+            if (root.cfg.fontFamily !== "") {
+              item.fontFamily = root.cfg.fontFamily
+            } else if (item.defaultFontFamily !== undefined) {
+              // No pinned font: re-bind to the face's own shipped default so a
+              // reset follows the theme font again (Grand keeps its serif stack).
+              item.fontFamily = Qt.binding(function() { return item.defaultFontFamily })
+            }
+          }
         }
 
         function faceFor(layout) {

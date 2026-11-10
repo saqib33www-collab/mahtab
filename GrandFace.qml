@@ -19,6 +19,9 @@ Item {
   property color ink: Color.foreground
   property color accent: Color.accent
   property string fontFamily: "Noto Serif, serif"
+  // The editorial serif this face is designed around; a cleared settings font
+  // restores it rather than the theme font.
+  readonly property string defaultFontFamily: "Noto Serif, serif"
   property string labelFontFamily: Style.font.family
   property bool cardEnabled: false
   property color cardColor: Color.background

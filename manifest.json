@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "saqib33w.mahtab",
   "name": "Mahtab",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": "saqib33w",
   "description": "A wallpaper clock with a stylized faux-kana weekday and a family of ported Ryoku time faces, plus an optional twelve-style cava audio visualizer, highly inspired by the Kronos Omarchy plugin.",
   "kinds": ["service", "panel", "bar-widget"],
@@ -109,7 +109,7 @@
       "type": "string",
       "label": "Font",
       "defaultValue": "",
-      "description": "Family for the greeting and date. Empty uses the Omarchy shell font."
+      "description": "Font family for the clock's time, greeting, and date. Empty uses the Omarchy theme font; the settings panel lists every installed system font."
     },
     {
       "key": "screenMode",

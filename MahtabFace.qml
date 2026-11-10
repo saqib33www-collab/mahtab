@@ -19,6 +19,9 @@ Item {
   property bool use24h: false
   property color ink: Color.foreground
   property string fontFamily: Style.font.family
+  // Same restore contract as BaseFace: Service re-binds fontFamily to this
+  // when the settings font is cleared.
+  readonly property string defaultFontFamily: Style.font.family
   property bool cardEnabled: false
   property color cardColor: Color.background
   property real cardAlpha: 0.7

@@ -21,6 +21,9 @@ Item {
   property color accent: Color.accent
   property color shadowColor: Qt.rgba(0, 0, 0, 0.55)
   property string fontFamily: Style.font.family
+  // What `fontFamily` falls back to when no font is pinned in settings: a
+  // binding, so a theme font change still updates the clock live.
+  readonly property string defaultFontFamily: Style.font.family
   property string labelFontFamily: Style.font.family
   property string monoFamily: "JetBrainsMono Nerd Font"
   property bool cardEnabled: false
