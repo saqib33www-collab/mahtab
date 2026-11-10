@@ -343,6 +343,32 @@ Item {
                 SectionHeader {
                   width: parent.width
                   kind: "clock"
+                  text: "Typeface"
+                }
+
+                SearchableDropdown {
+                  id: fontField
+                  width: parent.width
+                  label: "Clock font"
+                  value: root.draft.fontFamily
+                  options: root.fontOptions
+                  onChanged: function(v) { root.patchDraft({ fontFamily: v }) }
+                }
+
+                Text {
+                  width: parent.width
+                  wrapMode: Text.WordWrap
+                  text: "Every font installed on the system, searchable by name. Shell default follows the Omarchy theme font."
+                  color: Qt.darker(Color.foreground, 1.35)
+                  font.family: Style.font.family
+                  font.pixelSize: Style.font.caption
+                }
+
+                PanelSeparator { width: parent.width }
+
+                SectionHeader {
+                  width: parent.width
+                  kind: "clock"
                   text: "Layout"
                 }
 
@@ -371,32 +397,6 @@ Item {
                   value: root.draft.screenMode
                   options: root.screenModeOptions
                   onChanged: function(v) { root.patchDraft({ screenMode: v }) }
-                }
-
-                PanelSeparator { width: parent.width }
-
-                SectionHeader {
-                  width: parent.width
-                  kind: "clock"
-                  text: "Typeface"
-                }
-
-                SearchableDropdown {
-                  id: fontField
-                  width: parent.width
-                  label: "Clock font"
-                  value: root.draft.fontFamily
-                  options: root.fontOptions
-                  onChanged: function(v) { root.patchDraft({ fontFamily: v }) }
-                }
-
-                Text {
-                  width: parent.width
-                  wrapMode: Text.WordWrap
-                  text: "Every font installed on the system, searchable by name. Shell default follows the Omarchy theme font."
-                  color: Qt.darker(Color.foreground, 1.35)
-                  font.family: Style.font.family
-                  font.pixelSize: Style.font.caption
                 }
 
                 PanelSeparator { width: parent.width }
