@@ -363,7 +363,7 @@ Item {
                   text: "Typeface"
                 }
 
-                Dropdown {
+                FontDropdown {
                   id: fontField
                   width: parent.width
                   label: "Clock font"
