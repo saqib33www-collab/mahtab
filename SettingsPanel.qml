@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import qs.Commons
 import qs.Ui
 import "ClockModel.js" as Clock
@@ -97,25 +98,41 @@ Item {
     { value: "white", label: "White" }
   ]
 
-  // Every font family installed on the system, asked from Qt's font database
-  // the first time the panel opens so late installs are found too. The leading
-  // "" option keeps the manifest default reachable, so the clock can always go
-  // back to following the Omarchy theme font.
+  // Font choices mirror Omarchy's own font menu: omarchy-font-list returns the
+  // system's monospace families (minus emoji/icon noise), so the picker stays
+  // short and matches what appearance.font offers. The leading "" option keeps
+  // the manifest default reachable, so the clock can always go back to
+  // following the Omarchy theme font. Re-read on every panel open so fonts
+  // installed later show up without reloading the shell.
   property var fontOptions: [
-    { value: "", label: "Shell default", description: "Follows the Omarchy theme font" }
+    { value: "", label: "Shell default" }
   ]
-  property bool fontOptionsLoaded: false
+  property bool fontOptionsLoading: false
 
-  function loadFontOptions() {
-    if (root.fontOptionsLoaded) return
-    root.fontOptionsLoaded = true
-    var out = [{ value: "", label: "Shell default", description: "Follows the Omarchy theme font" }]
-    var fams = Qt.fontFamilies()
-    var names = []
-    for (var i = 0; i < fams.length; i++) names.push(String(fams[i]))
-    names.sort(function(a, b) { return a.localeCompare(b) })
-    for (var j = 0; j < names.length; j++) out.push({ value: names[j], label: names[j] })
-    root.fontOptions = out
+  function refreshFontOptions() {
+    if (root.fontOptionsLoading) return
+    root.fontOptionsLoading = true
+    fontListProc.running = true
+  }
+
+  Process {
+    id: fontListProc
+    command: ["sh", "-c", "omarchy-font-list 2>/dev/null"]
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: {
+        var out = [{ value: "", label: "Shell default" }]
+        var lines = String(text || "").split("\n")
+        for (var i = 0; i < lines.length; i++) {
+          var name = lines[i].trim()
+          if (name) out.push({ value: name, label: name })
+        }
+        // Keep the last good list if the command produced nothing (e.g. the
+        // omarchy CLI is missing); the default-only list also stays put.
+        if (out.length > 1) root.fontOptions = out
+        root.fontOptionsLoading = false
+      }
+    }
   }
 
   readonly property var fakeBar: QtObject {
@@ -165,7 +182,7 @@ Item {
     // saved settings.
     if (liveConfig) liveConfig.refresh()
     draft = Clock.readSettings(pluginEntry())
-    root.loadFontOptions()
+    root.refreshFontOptions()
     root.opened = true
     Qt.callLater(function() {
       if (keyCatcher) keyCatcher.forceActiveFocus()
@@ -346,7 +363,7 @@ Item {
                   text: "Typeface"
                 }
 
-                SearchableDropdown {
+                Dropdown {
                   id: fontField
                   width: parent.width
                   label: "Clock font"
@@ -358,7 +375,7 @@ Item {
                 Text {
                   width: parent.width
                   wrapMode: Text.WordWrap
-                  text: "Every font installed on the system, searchable by name. Shell default follows the Omarchy theme font."
+                  text: "Same monospace fonts as the Omarchy font menu. Shell default follows the Omarchy theme font."
                   color: Qt.darker(Color.foreground, 1.35)
                   font.family: Style.font.family
                   font.pixelSize: Style.font.caption

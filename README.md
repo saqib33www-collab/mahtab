@@ -22,7 +22,7 @@ windows, so it only shows on an empty desktop.
 - Optional rounded card behind the clock for readability on busy wallpapers
 - Nine anchor positions **or** free-form placement by dragging the clock anywhere
 - Resize by scrolling over the clock — no settings panel needed
-- Searchable **font picker** — every font installed on the system
+- **Font picker** — the same monospace fonts as the Omarchy font menu
 - Multi-monitor targeting: all, primary, focused, or external only
 - Live settings through a right-click panel — no shell reload required
 - Optional **audio visualizer** on the wallpaper — twelve GPU-drawn styles, fed by `cava`

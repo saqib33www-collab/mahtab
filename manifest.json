@@ -109,7 +109,7 @@
       "type": "string",
       "label": "Font",
       "defaultValue": "",
-      "description": "Font family for the clock's time, greeting, and date. Empty uses the Omarchy theme font; the settings panel lists every installed system font."
+      "description": "Font family for the clock's time, greeting, and date. Empty uses the Omarchy theme font; the settings panel offers the same monospace fonts as the Omarchy font menu."
     },
     {
       "key": "screenMode",
