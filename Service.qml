@@ -20,6 +20,17 @@ Item {
   property var shell: null
   property var manifest: null
 
+  // Set by the live bar widget: the icon the settings panel should drop out
+  // of, and the bar surface it should follow. The panel is a separate "panel"
+  // entry point hosted outside the bar, so it borrows these the way built-in
+  // Bluetooth/Network panels anchor to their own bar button.
+  property Item settingsAnchor: null
+  property var settingsBar: null
+  // The bar widget itself, which the bar identifies its panels by: the
+  // open-panel mark compares the popout owner against the widget in the slot,
+  // so the settings panel must coordinate as the widget rather than as itself.
+  property var settingsOwner: null
+
   readonly property string pluginId: manifest && manifest.id ? manifest.id : "saqib33w.mahtab"
   readonly property var cfg: Clock.readSettings(liveConfig.entry || { id: root.pluginId })
   readonly property var pos: Clock.parsePosition(root.cfg.position)
